@@ -12,21 +12,14 @@ public class RegExp {
 
 		char last = lemma.charAt(lemma.length()-1);
 		String derLemma = lemma.substring(0, lemma.length() - 1) + "\\(" + last + "\\)";
-		Pattern p1 = Pattern.compile(lemma + "(\\=|\\b)" + "[\\w'\\(\\)]*[\\w'\\(\\)]*");
-		Pattern p2 = Pattern.compile(derLemma + "(\\=|\\b)" + "[\\w'\\(\\)]*[\\w'\\(\\)]*");
+		Pattern p1 = Pattern.compile("(" +lemma +"|"+derLemma+")" + "(\\=|\\b)" + "[\\w'\\(\\)]*[\\w'\\(\\)]*");
 
 		Matcher m1 = p1.matcher(file);
-		Matcher m2 = p2.matcher(file);
-
 
 		List<String> words = new ArrayList<String>();
 		while (m1.find()) {
 			words.add(m1.group());
 			System.out.println("found: " + m1.group());
-		}
-		while (m2.find()) {
-			words.add(m2.group());
-			System.out.println("found: " + m2.group());
 		}
 	}
 }
