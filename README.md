@@ -1,2 +1,2 @@
 ## MixtecAnalyzer
- * bullet point
+ 
