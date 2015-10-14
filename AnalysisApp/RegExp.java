@@ -21,10 +21,9 @@ public class RegExp {
 		List<String> words = new ArrayList<String>();
 		while (m1.find()) {
 			words.add(m1.group());
-			if (m2.find(m1.end()))
+			if (m2.find(m1.end())){
 				System.out.println("found: " + m1.group() + " " + m2.group());
-			else
-			System.out.println("found: " + m1.group());
+			}
 		}
 	}
 	
