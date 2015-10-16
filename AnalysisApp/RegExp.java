@@ -3,13 +3,13 @@ import java.util.*;
 import java.util.regex.*;
 
 public class RegExp {
-	public static void main(String[] args) throws FileNotFoundException {
+	
+	public static HashMap<String, Double> search(String lemma) throws FileNotFoundException {
 		
 		@SuppressWarnings("resource")
 		String file = new Scanner(new File("readme.txt")).useDelimiter("\\A").next();
+		int total = 0;
 		
-		String lemma = "tu3";
-
 		char last = lemma.charAt(lemma.length()-1);
 		String derLemma = lemma.substring(0, lemma.length() - 1) + "\\(" + last + "\\)";
 		Pattern p1 = Pattern.compile("(" +lemma +"|"+derLemma+")" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
@@ -18,31 +18,26 @@ public class RegExp {
 		Matcher m1 = p1.matcher(file);
 		Matcher m2 = p2.matcher(file);
 
-		List<String> words = new ArrayList<String>();
+		HashMap<String, Double> frequency = new HashMap<String, Double>();
 		while (m1.find()) {
-			words.add(m1.group());
 			if (m2.find(m1.end())){
-				System.out.println("found: " + m1.group() + " " + m2.group());
+				total++;
+				String origLemma = m2.group().replaceAll("\\=" + "[\\w'\\(\\)]*", "");
+				if (origLemma.contains("(")){
+					origLemma = origLemma.replace("(", "");
+					origLemma = origLemma.replace(")", "");
+				}
+				if (!frequency.containsKey(origLemma)){
+				frequency.put(origLemma,1.0);
+				}
+				else
+					frequency.put(origLemma,frequency.get(origLemma) + 1);
 			}
 		}
-	}
-	
-	public static ArrayList<String> search(String lemma) throws FileNotFoundException {
-		
-		@SuppressWarnings("resource")
-		String file = new Scanner(new File("readme.txt")).useDelimiter("\\A").next();
-
-		char last = lemma.charAt(lemma.length()-1);
-		String derLemma = lemma.substring(0, lemma.length() - 1) + "\\(" + last + "\\)";
-		Pattern p1 = Pattern.compile("(" +lemma +"|"+derLemma+")" + "(\\=|\\b)" + "[\\w'\\(\\)]*[\\w'\\(\\)]*");
-
-		Matcher m1 = p1.matcher(file);
-
-		ArrayList<String> words = new ArrayList<String>();
-		while (m1.find()) {
-			words.add(m1.group());
+		for (String key : frequency.keySet()) {
+			frequency.put(key,frequency.get(key)/total);
 		}
-		return words;
+		return frequency;
 	}
 }
 

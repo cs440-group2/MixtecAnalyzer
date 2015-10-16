@@ -14,6 +14,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -73,7 +74,7 @@ public class MainWindow {
 				
 				String lemma = txtLemma.getText();  //"tu3";
 
-				ArrayList<String> words = null;
+				HashMap<String, Double> words = null;
 				try {
 					words = RegExp.search(lemma);
 				} catch (FileNotFoundException e1) {
@@ -81,8 +82,8 @@ public class MainWindow {
 					e1.printStackTrace();
 				}
 				model = new DefaultListModel();
-				for(int i = 0; i<words.size(); i++){
-					model.addElement(words.get(i));
+				for (String key : words.keySet()) {
+					model.addElement(key + " " + words.get(key));
 				}
 				list.setModel(model);
 			}
