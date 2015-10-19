@@ -5,14 +5,19 @@ import javax.swing.JList;
 import java.awt.BorderLayout;
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListModel;
+import javax.swing.DefaultRowSorter;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
 import java.awt.Color;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.JButton;
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,13 +25,34 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.awt.event.ActionEvent;
+import javax.swing.JSplitPane;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JMenu;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.BoxLayout;
+import java.awt.GridLayout;
+import java.awt.CardLayout;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.RowSpec;
+import net.miginfocom.swing.MigLayout;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
+import javax.swing.JTable;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class MainWindow {
 
 	private JFrame frame;
-	private JTextField txtLemma;
-	private DefaultListModel model;
-	JList list;
+	private DefaultTableModel model;
+	private JTextField textField;
+	private JTable table;
 
 	/**
 	 * Launch the application.
@@ -46,56 +72,103 @@ public class MainWindow {
 
 	/**
 	 * Create the application.
+	 * @throws IOException 
 	 */
-	public MainWindow() {
+	public MainWindow() throws IOException {
 		initialize();
 	}
 
 	/**
 	 * Initialize the contents of the frame.
+	 * @throws IOException 
 	 */
-	private void initialize() {
+	private void initialize() throws IOException {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 300, 300);
+		frame.setBounds(100, 100, 1000, 800);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().setLayout(new BorderLayout(0, 0));
+		
+		DefaultListModel lemmaList = Dictionary.getLemmaList();
+		
+		JMenuBar menuBar = new JMenuBar();
+		frame.getContentPane().add(menuBar, BorderLayout.NORTH);
+		
+		JMenu mnNewMenu = new JMenu("File");
+		menuBar.add(mnNewMenu);
+		
+		JMenuItem mntmFile = new JMenuItem("Load Transriptions");
+		mnNewMenu.add(mntmFile);
 		
 		JPanel panel = new JPanel();
-		frame.getContentPane().add(panel, BorderLayout.NORTH);
+		frame.getContentPane().add(panel, BorderLayout.CENTER);
+		panel.setLayout(new BorderLayout(0, 0));
 		
-		txtLemma = new JTextField();
-		txtLemma.setText("Lemma");
-		panel.add(txtLemma);
-		txtLemma.setColumns(10);
+		JSplitPane splitPane = new JSplitPane();
+		splitPane.setOneTouchExpandable(true);
+		panel.add(splitPane, BorderLayout.CENTER);
+		
+		JPanel panel_1 = new JPanel();
+		splitPane.setLeftComponent(panel_1);
+		panel_1.setLayout(new BorderLayout(0, 0));
+		
+		JPanel panel_3 = new JPanel();
+		panel_1.add(panel_3, BorderLayout.NORTH);
+		
+		textField = new JTextField();
+		panel_3.add(textField);
+		textField.setHorizontalAlignment(SwingConstants.CENTER);
+		textField.setColumns(10);
 		
 		JButton btnSearch = new JButton("Search");
+		panel_3.add(btnSearch);
+		
+		JList list = new JList();
+		list.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				textField.setText("");
+			}
+		});
+		JScrollPane listScroll = new JScrollPane(list);
+		panel_1.add(listScroll, BorderLayout.CENTER);
+		list.setModel(Dictionary.getLemmaList());
+		
 		btnSearch.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
-				String lemma = txtLemma.getText();  //"tu3";
-
-				HashMap<String, Double> words = null;
+				String lemma = "";
+				if(textField.getText().equals("")){
+					lemma = (String) list.getSelectedValue();
+					lemma = lemma.substring(0, lemma.indexOf("("));
+				}
+				else {
+					lemma = textField.getText();
+				}
+				HashMap<String, Double> results = null;
 				try {
-					words = RegExp.search(lemma);
+					results = RegExp.search(lemma);
 				} catch (FileNotFoundException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				model = new DefaultListModel();
-				for (String key : words.keySet()) {
-					model.addElement(key + " " + words.get(key));
+				model = new DefaultTableModel();
+				model.addColumn("Lemma");
+				model.addColumn("Frequency");
+				for (String key : results.keySet()) {
+					String[] arr = {key, results.get(key).toString()};
+					model.addRow(arr);
 				}
-				list.setModel(model);
+				table.setModel(model);
+				DefaultRowSorter sorter = new TableRowSorter(model);
+				table.setRowSorter(sorter);
 			}
 		});
-		panel.add(btnSearch);
 		
-		JPanel panel_1 = new JPanel();
-		frame.getContentPane().add(panel_1, BorderLayout.CENTER);
+		JPanel panel_2 = new JPanel();
+		splitPane.setRightComponent(panel_2);
+		panel_2.setLayout(new BorderLayout(0, 0));
 		
-		list = new JList();
-		panel_1.add(list);
-		
+		table = new JTable();
+		JScrollPane tableScroll = new JScrollPane(table);
+		panel_2.add(tableScroll);
 		
 	}
  
