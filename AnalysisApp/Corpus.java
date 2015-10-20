@@ -14,7 +14,7 @@ public class Corpus {
 	public static void main(String[] args) {
 
 		ArrayList<File> transFiles = new ArrayList<File>();
-		listFiles("/Users/Hannah/Desktop/Mixtec/Transcripciones-activas_2015-08-26", transFiles);
+		listFiles("/Users/kwigley/Projects/Capstone/Transcripciones-activas_2015-08-26", transFiles);
 		showFiles(transFiles);
 	}
 
