@@ -28,10 +28,12 @@ public class RegExp {
 					origLemma = origLemma.replace(")", "");
 				}
 				if (!frequency.containsKey(origLemma)){
-				frequency.put(origLemma,1.0);
+					frequency.put(origLemma,1.0);
 				}
 				else
+				{
 					frequency.put(origLemma,frequency.get(origLemma) + 1);
+				}
 			}
 		}
 		for (String key : frequency.keySet()) {
@@ -40,5 +42,3 @@ public class RegExp {
 		return frequency;
 	}
 }
-
-
