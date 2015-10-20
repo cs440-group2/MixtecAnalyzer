@@ -13,6 +13,8 @@ import java.awt.Color;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
+
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -41,6 +43,7 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.RowSpec;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.SwingConstants;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import javax.swing.JTable;
@@ -96,6 +99,17 @@ public class MainWindow {
 		menuBar.add(mnNewMenu);
 		
 		JMenuItem mntmFile = new JMenuItem("Load Transriptions");
+		mntmFile.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser chooser = new JFileChooser();
+				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			    int returnVal = chooser.showOpenDialog(frame);
+			    if(returnVal == JFileChooser.APPROVE_OPTION) {
+			       System.out.println("You chose to open this folder: " +
+			            chooser.getSelectedFile().getName());
+			    }
+			}
+		});
 		mnNewMenu.add(mntmFile);
 		
 		JPanel panel = new JPanel();
