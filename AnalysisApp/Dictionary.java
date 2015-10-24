@@ -15,17 +15,19 @@ import javax.swing.WindowConstants;
 public class Dictionary {
 	
 	HashMap<String, ArrayList<String>> glosses;
+	HashMap<String, ArrayList<String>> forms;
 	
 	
 	public void findLemmas(BufferedReader bReader) throws IOException{
 		String line = bReader.readLine();
 		ArrayList<String> lemmas = new ArrayList<String>();
 		glosses = new HashMap<String, ArrayList<String>>();
+		forms = new HashMap<String, ArrayList<String>>();
 		
 		String currentLemma = "";
 		
 		while(line != null){
-			if(line.length() >=4 && line.substring(0, 4).equals("\\lx ")){
+			if(line.startsWith("\\lx ")){
 				String newLemma = line.substring(4);
 				if(!newLemma.equals(currentLemma)){
 					lemmas.add(newLemma);
@@ -33,13 +35,31 @@ public class Dictionary {
 					currentLemma = newLemma;
 				}
 			}
-			else if(line.length() >=7 && line.substring(0, 7).equals("\\glosa ")){
+			else if(line.startsWith("\\glosa ")){
 				ArrayList<String> glossList = glosses.get(currentLemma);
 				glossList.add(line.substring(7));
+			}
+			else if(line.startsWith("\\lx_") && !line.startsWith("\\lx_cita")){
+				if(!forms.containsKey(currentLemma)){
+					forms.put(currentLemma, new ArrayList<String>());
+				}
+				ArrayList<String> currentList = forms.get(currentLemma);
+				String entry = line.substring(line.indexOf(' '));
+				
+				if(entry.contains(";")){
+					String[] entries = entry.split(";");
+					for(String item : entries){
+						currentList.add(item.trim());
+					}
+				}
+				
+				forms.get(currentLemma).add(entry);
+				
 			}
 			line = bReader.readLine();
 		}
 		
+		System.out.println(forms.toString());
 		JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		
@@ -111,6 +131,7 @@ public class Dictionary {
 			}
 			line = bReader.readLine();
 		}
+		
 		
 		JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
