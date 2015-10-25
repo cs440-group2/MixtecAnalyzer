@@ -9,13 +9,22 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.awt.List;
 
+/**
+ * creates the corpus which contains all transcriptions files put in an ArrayList
+ * so it can be searched for collocations
+ */
 public class Corpus {
+
+	public static ArrayList<String> corpus = new ArrayList<String>();
 
 	public static void main(String[] args) {
 
 		ArrayList<File> transFiles = new ArrayList<File>();
-		listFiles("/Users/kwigley/Projects/Capstone/Transcripciones-activas_2015-08-26", transFiles);
+
+		listFiles("/Users/Hannah/Desktop/Mixtec/Transcripciones-activas_2015-08-26", transFiles);
 		showFiles(transFiles);
+		System.out.println(corpus.size());
+
 	}
 
 	//updates files to include all files in the directory and sub directories with .trs extension
@@ -37,7 +46,7 @@ public class Corpus {
 		}
 	}
 
-	//concatenates file contents into string, and prints them out
+	//concatenates file contents into string, and adds strings to corpus ArrayList
 	public static void showFiles(ArrayList<File> files) {
 		for (File file : files) {
 
@@ -51,13 +60,18 @@ public class Corpus {
 				//read file line by line
 				try {
 					while((line = br.readLine())  != null){
-						if(!line.startsWith("<")){
-							str = str + line;
+
+						if(line.startsWith("</Turn")){
+//							System.out.println(str);
+							corpus.add(str);
+							str = "";
+						}
+						else if(!line.startsWith("<")){
+							str = str + line + " ";
 						}
 					}
-
-					System.out.println(str);
-				} catch (IOException e) {
+				}
+				catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
