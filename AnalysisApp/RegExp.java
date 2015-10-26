@@ -9,7 +9,12 @@ public class RegExp {
 		for (String key : test.keySet())
 			System.out.println(key);
 	}
-
+	/**
+	 * 
+	 * @param lemma: term searched by the user
+	 * @return HashMap of found lemmas and their frequency relative to the total lemmas found
+	 * @throws FileNotFoundException
+	 */
 	public static HashMap<String, Double> search(String lemma) throws FileNotFoundException {
 
 		@SuppressWarnings("resource")
@@ -47,7 +52,14 @@ public class RegExp {
 		}
 		return frequency;
 	}
-
+	
+	/**
+	 * 
+	 * @param lemma: term searched by the user
+	 * @param NumBtwn: Number of words in between searched lemma and found lemma
+	 * @return HashMap of found lemmas and their frequency relative to the total lemmas found
+	 * @throws FileNotFoundException
+	 */
 	public static HashMap<String, Double> AdvancedSearch(String lemma, int NumBtwn) throws FileNotFoundException {
 
 		@SuppressWarnings("resource")
