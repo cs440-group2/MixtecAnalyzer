@@ -49,6 +49,10 @@ import javax.swing.table.TableRowSorter;
 import javax.swing.JTable;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
 
 public class MainWindow {
 
@@ -56,6 +60,7 @@ public class MainWindow {
 	private DefaultTableModel model;
 	private JTextField textField;
 	private JTable table;
+	private JList list;
 
 	/**
 	 * Launch the application.
@@ -112,6 +117,9 @@ public class MainWindow {
 		});
 		mnNewMenu.add(mntmFile);
 		
+		JMenuItem mntmNewMenuItem = new JMenuItem("Settings");
+		mnNewMenu.add(mntmNewMenuItem);
+		
 		JPanel panel = new JPanel();
 		frame.getContentPane().add(panel, BorderLayout.CENTER);
 		panel.setLayout(new BorderLayout(0, 0));
@@ -132,9 +140,6 @@ public class MainWindow {
 		textField.setHorizontalAlignment(SwingConstants.CENTER);
 		textField.setColumns(10);
 		
-		JButton btnSearch = new JButton("Search");
-		panel_3.add(btnSearch);
-		
 		JList list = new JList();
 		list.addMouseListener(new MouseAdapter() {
 			@Override
@@ -145,6 +150,23 @@ public class MainWindow {
 		JScrollPane listScroll = new JScrollPane(list);
 		panel_1.add(listScroll, BorderLayout.CENTER);
 		list.setModel(Dictionary.getLemmaList());
+		
+		JPanel panel_4 = new JPanel();
+		panel_1.add(panel_4, BorderLayout.SOUTH);
+		panel_4.setLayout(new BorderLayout(0, 0));
+		
+		JComboBox comboBox = new JComboBox();
+		comboBox.addItem("Preceding lemma");
+		comboBox.addItem("Following lemma");
+		comboBox.addItem("Preceding and following");
+		panel_4.add(comboBox, BorderLayout.CENTER);
+		
+		JButton btnSearch = new JButton("Search");
+		panel_4.add(btnSearch, BorderLayout.SOUTH);
+		
+		JLabel lblNewLabel = new JLabel("Search for words:");
+		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		panel_4.add(lblNewLabel, BorderLayout.NORTH);
 		
 		btnSearch.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -183,6 +205,15 @@ public class MainWindow {
 		table = new JTable();
 		JScrollPane tableScroll = new JScrollPane(table);
 		panel_2.add(tableScroll);
+		
+		JPanel panel_5 = new JPanel();
+		panel_2.add(panel_5, BorderLayout.SOUTH);
+		
+		JButton btnNewButton = new JButton("Advanced Search");
+		panel_5.add(btnNewButton);
+		
+		JButton btnNewButton_1 = new JButton("Add to Dictionary");
+		panel_5.add(btnNewButton_1);
 		
 	}
  
