@@ -4,6 +4,7 @@ import javax.swing.JFrame;
 import javax.swing.JList;
 import java.awt.BorderLayout;
 import javax.swing.AbstractListModel;
+import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.DefaultRowSorter;
 import javax.swing.JPanel;
@@ -129,6 +130,7 @@ public class MainWindow {
 		panel.add(splitPane, BorderLayout.CENTER);
 		
 		JPanel panel_1 = new JPanel();
+		panel_1.setBorder(BorderFactory.createLineBorder(Color.black));
 		splitPane.setLeftComponent(panel_1);
 		panel_1.setLayout(new BorderLayout(0, 0));
 		
@@ -186,10 +188,11 @@ public class MainWindow {
 					e1.printStackTrace();
 				}
 				model = new DefaultTableModel();
-				model.addColumn("Lemma");
+				model.addColumn("Appearing with search term");
+				model.addColumn("Gloss (meaning)");
 				model.addColumn("Frequency");
 				for (String key : results.keySet()) {
-					String[] arr = {key, results.get(key).toString()};
+					String[] arr = {key,"", results.get(key).toString()};
 					model.addRow(arr);
 				}
 				table.setModel(model);
