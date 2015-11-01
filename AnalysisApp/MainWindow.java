@@ -96,7 +96,14 @@ public class MainWindow {
 		frame.setBounds(100, 100, 1000, 800);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		DefaultListModel lemmaList = Dictionary.getLemmaList();
+		
+		Dictionary dict = new Dictionary();
+		DefaultListModel lemmaList = new DefaultListModel();
+		ArrayList<String> lemmas = dict.getLemmaList();
+		for(int i = 0; i < lemmas.size(); i++){
+			lemmaList.addElement(lemmas.get(i));
+		}
+		
 		
 		JMenuBar menuBar = new JMenuBar();
 		frame.getContentPane().add(menuBar, BorderLayout.NORTH);
@@ -151,7 +158,7 @@ public class MainWindow {
 		});
 		JScrollPane listScroll = new JScrollPane(list);
 		panel_1.add(listScroll, BorderLayout.CENTER);
-		list.setModel(Dictionary.getLemmaList());
+		list.setModel(lemmaList);
 		
 		JPanel panel_4 = new JPanel();
 		panel_1.add(panel_4, BorderLayout.SOUTH);
