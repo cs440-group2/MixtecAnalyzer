@@ -14,12 +14,12 @@ import javax.swing.WindowConstants;
 
 public class Dictionary {
 	
-	HashMap<String, ArrayList<String>> glosses;
-	HashMap<String, ArrayList<String>> forms;
+	HashMap<String, Lemma> lemmaMap;
+	ArrayList<String> lemmas;
 	
 	private class Lemma{
 		private String header;
-		private ArrayList<String> gloss;
+		private ArrayList<String> glosses;
 		private ArrayList<String> forms;
 		private boolean noun;
 		
@@ -27,10 +27,16 @@ public class Dictionary {
 			this.header = header;
 			noun = false;
 			forms = new ArrayList<String>();
+			glosses = new ArrayList<String>();
+			glosses.add(header);
 		}
 		
 		public void addForm(String newForm){
 			forms.add(newForm);
+		}
+		
+		public void addGloss(String newGloss){
+			glosses.add(newGloss);
 		}
 		
 		public void markNoun(){
@@ -45,17 +51,33 @@ public class Dictionary {
 			return (ArrayList<String>) forms.clone();
 		}
 		
+		public ArrayList<String> getGlosses(){
+			return (ArrayList<String>) glosses.clone();
+		}
+		
 		public String getHeader(){
 			return header;
 		}
 		
-		
+		@Override public String toString(){
+			StringBuilder sb = new StringBuilder(String.format("Header: %s\nNoun: %b\nGloss: ", header, noun));
+			for(String gloss : glosses){
+				sb.append(gloss);
+				sb.append("; ");
+			}
+			sb.append("\nForms:");
+			for(String form : forms){
+				sb.append(form + "; ");
+			}
+			
+			return sb.toString();
+		}
 		
 	}
 	
 	
 	
-	public void findLemmas(BufferedReader bReader) throws IOException{
+	/*public void findLemmas(BufferedReader bReader) throws IOException{
 		String line = bReader.readLine();
 		ArrayList<String> lemmas = new ArrayList<String>();
 		glosses = new HashMap<String, ArrayList<String>>();
@@ -131,9 +153,9 @@ public class Dictionary {
 		frame.setSize(500, 500);
 		frame.setVisible(true);
 		
-	}
+	}*/
 	
-	public static DefaultListModel getLemmaList() throws IOException{
+	/*public static DefaultListModel getLemmaList() throws IOException{
 		HashMap<String, ArrayList<String>> glosses;
 		
 		FileReader dictionaryReader;
@@ -143,7 +165,6 @@ public class Dictionary {
 			bReader = new BufferedReader(dictionaryReader);
 			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -192,23 +213,137 @@ public class Dictionary {
 		}
 		
 		return model;
+	}*/
+	
+	
+	public ArrayList<String> getLemmaList(){//returns list of lemmas
+		return (ArrayList<String>) lemmas.clone();
 	}
+	
+	public String findHeader(String term){//returns header of lemma associated with supplied word(the "root word")
+		return lemmaMap.get(term).getHeader();
+	}
+	
+	public ArrayList<String> getFormList(String term){//returns all forms of provided term
+		return lemmaMap.get(term).getForms();
+	}
+	
+	public ArrayList<String> getGlossList(String term){//returns glosses for provided term
+		return lemmaMap.get(term).getGlosses();
+	}
+	
+	public boolean isNoun(String term){//returns true if term is marked as a noun
+		return lemmaMap.get(term).isNoun();
+		
+	}
+	
+	public void addToMap(String key, Lemma lemma){//FOR TESTING PURPOSES ONLY
+		if(lemmaMap.containsKey(key) && lemma != lemmaMap.get(key)){
+			System.out.printf("OVERWRITE\nKey: %s\nOld Lemma: %s \nNew Lemma: %s\n", key, lemmaMap.get(key).getHeader(), lemma.getHeader());
+		}
+		lemmaMap.put(key, lemma);
+	}
+	
+	
+	
 	
 	public static void main(String[] args) throws FileNotFoundException{
-		Dictionary dict = new Dictionary();
-	}
-	
-	public Dictionary(){
-		FileReader dictionaryReader;
-		BufferedReader bReader;
 		try {
-			dictionaryReader = new FileReader("mixtec_maestro_unicode_2015-08-25.txt");
-			bReader = new BufferedReader(dictionaryReader);
-			findLemmas(bReader);
-			
+			Dictionary dict = new Dictionary();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
+	
+	public Dictionary() throws IOException{
+		FileReader dictionaryReader;
+		BufferedReader bReader;
+
+		dictionaryReader = new FileReader("mixtec_maestro_unicode_2015-08-25.txt");
+		bReader = new BufferedReader(dictionaryReader);
+		
+		String line = bReader.readLine();
+		lemmaMap = new HashMap<String, Lemma>();
+		lemmas = new ArrayList<String>();
+		
+		String currentLemmaString = "";
+		Lemma currentLemma = null;
+		
+		int lemmaConflict = 0;
+		int formConflict = 0;
+		int noConflict = 0;
+		while(line != null){
+			if(line.startsWith("\\lx ")){
+				String newLemmaString = line.substring(4);
+				if(!newLemmaString.equals(currentLemmaString)){
+					if(lemmaMap.containsKey(newLemmaString)){
+						lemmaConflict++;
+					}
+					else{
+						noConflict++;
+					}
+					lemmas.add(newLemmaString);
+					currentLemma = new Lemma(newLemmaString);
+					lemmaMap.put(newLemmaString, currentLemma);
+					currentLemmaString = newLemmaString;
+				}
+			}
+			else if(line.startsWith("\\glosa ")){
+				currentLemma.addGloss(line.substring(7));
+			}
+			else if(line.startsWith("\\lx_") && !line.startsWith("\\lx_cita")){
+				String entry = line.substring(line.indexOf(' '));
+				
+				String[] entries = entry.split(";");
+				for(String item : entries){
+					item = item.trim();
+					currentLemma.addForm(item);
+					if(!lemmaMap.containsKey(item)){//TODO: change fter testing
+						lemmaMap.put(item, currentLemma);
+						noConflict++;
+					}
+					else{
+						String oldLemma = lemmaMap.get(item).getHeader();
+
+						if(!oldLemma.equals(currentLemmaString)){
+							System.out.printf("OVERWRITE\nKey: %s\nOld Lemma: %s \nNew Lemma: %s\n", item, oldLemma, currentLemmaString);
+							if(lemmaMap.get(item).getHeader().equals(item)){
+								lemmaConflict++;
+								System.out.printf("Lemma Conflict: %d\n\n", lemmaConflict);
+							}
+							else{
+								formConflict++;
+								System.out.printf("Form Conflict: %d\n\n", formConflict);
+							}
+						}
+
+
+
+					}
+
+				}
+			}
+			else if(line.startsWith("\\catgr") && line.substring(line.indexOf(' ') + 1).equals("Sust")){
+				currentLemma.markNoun();
+			}
+			
+			line = bReader.readLine();
+		}
+		
+		System.out.printf("Total Conflicts:%d \nLemma Conflicts:%d \nForm Conflicts:%d\nNo Conflicts: %d", lemmaConflict + formConflict, lemmaConflict, formConflict, noConflict);
+		
+	}
+	
+	@Override public String toString(){
+		StringBuilder sb = new StringBuilder();
+		for(String entry : lemmas){
+			sb.append(lemmaMap.get(entry).toString());
+			sb.append("\n\n");
+		}
+		return sb.toString();
+	}
+	
+	
+	
+	
 }
