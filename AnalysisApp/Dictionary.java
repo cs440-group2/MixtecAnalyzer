@@ -17,6 +17,43 @@ public class Dictionary {
 	HashMap<String, ArrayList<String>> glosses;
 	HashMap<String, ArrayList<String>> forms;
 	
+	private class Lemma{
+		private String header;
+		private ArrayList<String> gloss;
+		private ArrayList<String> forms;
+		private boolean noun;
+		
+		public Lemma(String header){
+			this.header = header;
+			noun = false;
+			forms = new ArrayList<String>();
+		}
+		
+		public void addForm(String newForm){
+			forms.add(newForm);
+		}
+		
+		public void markNoun(){
+			noun = true;
+		}
+		
+		public boolean isNoun(){
+			return noun;
+		}
+		
+		public ArrayList<String> getForms(){
+			return (ArrayList<String>) forms.clone();
+		}
+		
+		public String getHeader(){
+			return header;
+		}
+		
+		
+		
+	}
+	
+	
 	
 	public void findLemmas(BufferedReader bReader) throws IOException{
 		String line = bReader.readLine();
