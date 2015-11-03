@@ -21,7 +21,7 @@ public class Corpus {
 
 		ArrayList<File> transFiles = new ArrayList<File>();
 
-		listFiles("/Users/Hannah/Desktop/Mixtec/Transcripciones-activas_2015-08-26", transFiles);
+		listFiles("/Users/Rebecca/Desktop/Transcripciones-activas_2015-08-26", transFiles);
 		showFiles(transFiles);
 		System.out.println(corpus.size());
 
