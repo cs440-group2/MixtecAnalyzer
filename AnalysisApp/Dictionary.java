@@ -16,20 +16,27 @@ public class Dictionary {
 	
 	private HashMap<String, Lemma> lemmaMap;
 	private ArrayList<String> lemmas;
+	private HashMap<String, ArrayList<String>> formMap;
 	
-	public Dictionary() throws IOException{
+	public Dictionary() throws IOException{ //TODO: Remove
+		this("mixtec_maestro_unicode_2015-08-25.txt");
+	}
+	
+	public Dictionary(String file) throws IOException{
 		FileReader dictionaryReader;
 		BufferedReader bReader;
 
-		dictionaryReader = new FileReader("mixtec_maestro_unicode_2015-08-25.txt");
+		dictionaryReader = new FileReader(file);
 		bReader = new BufferedReader(dictionaryReader);
 		
 		String line = bReader.readLine();
 		lemmaMap = new HashMap<String, Lemma>();
 		lemmas = new ArrayList<String>();
+		formMap = new HashMap<String, ArrayList<String>>();
 		
 		String currentLemmaString = "";
 		Lemma currentLemma = null;
+		ArrayList<String> formList = null;
 		
 
 		while(line != null){
@@ -40,6 +47,9 @@ public class Dictionary {
 					currentLemma = new Lemma(newLemmaString);
 					lemmaMap.put(newLemmaString, currentLemma);
 					currentLemmaString = newLemmaString;
+					formList = new ArrayList<String>();
+					formList.add(currentLemmaString);
+					formMap.put(currentLemmaString, formList);
 				}
 			}
 			else if(line.startsWith("\\glosa ")){
@@ -51,15 +61,11 @@ public class Dictionary {
 				String[] entries = entry.split(";");
 				for(String item : entries){
 					item = item.trim();
-					currentLemma.addForm(item);
-					if(!lemmaMap.containsKey(item)){
-						lemmaMap.put(item, currentLemma);
+					if(!formList.contains(item)){
+						formList.add(item);
+						currentLemma.addForm(item);
 					}
-
 				}
-			}
-			else if(line.startsWith("\\catgr") && line.substring(line.indexOf(' ') + 1).equals("Sust")){
-				currentLemma.markNoun();
 			}
 			
 			line = bReader.readLine();
@@ -75,22 +81,28 @@ public class Dictionary {
 		return (ArrayList<String>) lemmas.clone();
 	}
 	
-	public String findHeader(String term){//returns header of lemma associated with supplied word(the "root word")
-		return lemmaMap.get(term).getHeader();
+	
+	public ArrayList<String> findHeaders(String term){//returns headers of associated lemmas
+		ArrayList<String> result;
+		if(formMap.containsKey(term)){
+			result = (ArrayList<String>) formMap.get(term).clone();
+		}
+		else{
+			result = new ArrayList<String>();
+		}
+		
+		return result;
 	}
 	
-	public ArrayList<String> getFormList(String term){//returns all forms of provided term
+	public ArrayList<String> getFormList(String term){//returns all forms of provided term, term must be a lemma
 		return lemmaMap.get(term).getForms();
 	}
 	
-	public ArrayList<String> getGlossList(String term){//returns glosses for provided term
+	public ArrayList<String> getGlossList(String term){//returns glosses for provided term, term must be a lemma
 		return lemmaMap.get(term).getGlosses();
 	}
 	
-	public boolean isNoun(String term){//returns true if term is marked as a noun
-		return lemmaMap.get(term).isNoun();
-		
-	}
+
 	
 	
 
@@ -99,13 +111,11 @@ public class Dictionary {
 		private String header;
 		private ArrayList<String> glosses;
 		private ArrayList<String> forms;
-		private boolean noun;
 		
 		
 		
 		public Lemma(String header){
 			this.header = header;
-			noun = false;
 			forms = new ArrayList<String>();
 			glosses = new ArrayList<String>();
 			glosses.add(header);
@@ -119,13 +129,6 @@ public class Dictionary {
 			glosses.add(newGloss);
 		}
 		
-		public void markNoun(){
-			noun = true;
-		}
-		
-		public boolean isNoun(){
-			return noun;
-		}
 		
 		public ArrayList<String> getForms(){
 			return (ArrayList<String>) forms.clone();
@@ -140,7 +143,7 @@ public class Dictionary {
 		}
 		
 		@Override public String toString(){
-			StringBuilder sb = new StringBuilder(String.format("Header: %s\nNoun: %b\nGloss: ", header, noun));
+			StringBuilder sb = new StringBuilder(String.format("Header: %s\nGloss: ", header));
 			for(String gloss : glosses){
 				sb.append(gloss);
 				sb.append("; ");
@@ -166,14 +169,14 @@ public class Dictionary {
 	
 	
 	
-/*	public static void main(String[] args) throws FileNotFoundException{ TODO: remove
+	public static void main(String[] args) throws FileNotFoundException{// TODO: remove
 		try {
 			Dictionary dict = new Dictionary();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	*/
+	
 	
 	
 	
