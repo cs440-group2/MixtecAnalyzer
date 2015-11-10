@@ -189,7 +189,7 @@ public class MainWindow {
 				}
 				HashMap<String, Double> results = null;
 				try {
-					results = RegExp.search(lemma);
+					results = Search.search(lemma);
 				} catch (FileNotFoundException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
