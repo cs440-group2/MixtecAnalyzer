@@ -202,7 +202,17 @@ public class MainWindow {
 				model.addColumn("Gloss (meaning)");
 				model.addColumn("Frequency");
 				for (String key : results.keySet()) {
-					String[] arr = {key,"", results.get(key).toString()};
+					String gloss = "";
+				    if(dict.getLemmaList().contains(key)) {
+				    	ArrayList<String> glosses = dict.getGlossList(key);
+				    	for(int i = 1; i < glosses.size(); i++) {
+				    		if(i!=1) {
+				    			gloss = gloss + ", ";
+				    		}
+				    		gloss = gloss + glosses.get(i);
+				    	}
+				    }
+					String[] arr = {key, gloss, results.get(key).toString()};
 					model.addRow(arr);
 				}
 				table.setModel(model);
@@ -216,7 +226,6 @@ public class MainWindow {
 			public void keyTyped(KeyEvent e) {
 				String text = textField.getText();
 				lemmas = dict.getLemmaList(text);
-				System.out.println(lemmas);
 				lemmaList.removeAllElements();
 				for(int i = 0; i < lemmas.size(); i++){
 					lemmaList.addElement(lemmas.get(i));
