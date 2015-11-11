@@ -3,33 +3,42 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.awt.List;
+
+import javax.swing.JFileChooser;
 
 /**
- * creates the corpus which contains all transcriptions files put in an ArrayList
+ * Creates the corpus which contains all transcriptions files put in an ArrayList
  * so it can be searched for collocations
  */
 public class Corpus {
 
-	public static ArrayList<String> corpus = new ArrayList<String>();
-
-	public static void main(String[] args) {
-
-		ArrayList<File> transFiles = new ArrayList<File>();
-
-		listFiles("/Users/Rebecca/Desktop/Transcripciones-activas_2015-08-26", transFiles);
+	private String directoryName;
+	private ArrayList<String> corpus;
+	private ArrayList<File> transFiles;
+	
+	
+	/**
+	 * Corpus constructor
+	 * @param directoryName - Absolute path to directory of transcription files
+	 */
+	public Corpus(String directoryName) {
+		this.directoryName = directoryName;
+		corpus = new ArrayList<String>();
+		transFiles = new ArrayList<File>();
+		
+		listFiles(this.directoryName, transFiles);
 		showFiles(transFiles);
-		System.out.println(corpus.size());
-
 	}
 
-	//updates files to include all files in the directory and sub directories with .trs extension
-	public static void listFiles(String directoryName, ArrayList<File> files){
-
+	/**
+	 * Updates files to include all files in the directory and sub directories with .trs extension
+	 * @param directoryName
+	 * @param files
+	 */
+	public void listFiles(String directoryName, ArrayList<File> files){
 		File directory = new File(directoryName);
 		File[] fList = directory.listFiles();
 
@@ -46,8 +55,11 @@ public class Corpus {
 		}
 	}
 
-	//concatenates file contents into string, and adds strings to corpus ArrayList
-	public static void showFiles(ArrayList<File> files) {
+	/**
+	 * Concatenates file contents into string, and adds strings to corpus ArrayList
+	 * @param files
+	 */
+	public void showFiles(ArrayList<File> files) {
 		for (File file : files) {
 
 			try {
@@ -62,7 +74,6 @@ public class Corpus {
 					while((line = br.readLine())  != null){
 
 						if(line.startsWith("</Turn")){
-//							System.out.println(str);
 							corpus.add(str);
 							str = "";
 						}
@@ -81,5 +92,32 @@ public class Corpus {
 			}
 
 		}
+	}
+	
+	/**
+	 * Getter for corpus generated from transcription files
+	 * @return corpus
+	 */
+	public ArrayList<String> getCorpus() {
+		return corpus;
+	}
+	
+	//test
+	public static void main(String[] args) {
+		
+		JFileChooser chooser = new JFileChooser();
+		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+	    int returnVal = chooser.showOpenDialog(null);
+	    if(returnVal == JFileChooser.APPROVE_OPTION) {
+	       System.out.println("You chose to open this folder: " +
+	            chooser.getSelectedFile().getName());
+	    }
+		
+		Corpus testCorpus = new Corpus(chooser.getSelectedFile().getAbsolutePath());
+		
+		ArrayList<String> corpus = testCorpus.getCorpus();
+
+		System.out.println(corpus.size());
+
 	}
 }

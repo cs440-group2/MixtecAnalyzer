@@ -10,6 +10,12 @@ public class Search {
 			System.out.println(key);
 	}
 	
+	/**
+	 * @param lemma
+	 * @param position
+	 * @return
+	 * @throws FileNotFoundException
+	 */
 	public static HashMap<String, Double> search(String lemma, String position) throws FileNotFoundException{
 		if (position == "preceding"){
 			return preSearch(lemma);

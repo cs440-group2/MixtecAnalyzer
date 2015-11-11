@@ -62,6 +62,9 @@ public class MainWindow {
 	private JTextField textField;
 	private JTable table;
 	private JList list;
+	private Dictionary dict;
+	private DefaultListModel lemmaList;
+	private ArrayList<String> lemmas;
 
 	/**
 	 * Launch the application.
@@ -97,14 +100,14 @@ public class MainWindow {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		
-		Dictionary dict = new Dictionary();
-		DefaultListModel lemmaList = new DefaultListModel();
-		ArrayList<String> lemmas = dict.getLemmaList();
+		dict = new Dictionary();
+		lemmaList = new DefaultListModel();
+		lemmas = dict.getLemmaList();
 		for(int i = 0; i < lemmas.size(); i++){
 			lemmaList.addElement(lemmas.get(i));
 		}
 		
-		
+		//Set up menu bar
 		JMenuBar menuBar = new JMenuBar();
 		frame.getContentPane().add(menuBar, BorderLayout.NORTH);
 		
@@ -165,9 +168,9 @@ public class MainWindow {
 		panel_4.setLayout(new BorderLayout(0, 0));
 		
 		JComboBox comboBox = new JComboBox();
-		comboBox.addItem("Preceding lemma");
-		comboBox.addItem("Following lemma");
-		comboBox.addItem("Preceding and following");
+		comboBox.addItem("preceding");
+		comboBox.addItem("following");
+		comboBox.setSelectedIndex(0);
 		panel_4.add(comboBox, BorderLayout.CENTER);
 		
 		JButton btnSearch = new JButton("Search");
@@ -182,14 +185,14 @@ public class MainWindow {
 				String lemma = "";
 				if(textField.getText().equals("")){
 					lemma = (String) list.getSelectedValue();
-					lemma = lemma.substring(0, lemma.indexOf("("));
 				}
 				else {
 					lemma = textField.getText();
 				}
 				HashMap<String, Double> results = null;
+				String position = (String) comboBox.getSelectedItem();
 				try {
-					results = Search.search(lemma);
+					results = Search.search(lemma, position);
 				} catch (FileNotFoundException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -208,6 +211,21 @@ public class MainWindow {
 			}
 		});
 		
+		textField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyTyped(KeyEvent e) {
+				String text = textField.getText();
+				lemmas = dict.getLemmaList(text);
+				System.out.println(lemmas);
+				lemmaList.removeAllElements();
+				for(int i = 0; i < lemmas.size(); i++){
+					lemmaList.addElement(lemmas.get(i));
+				}
+				list.setModel(lemmaList);
+				list.updateUI();
+			}
+		});
+		
 		JPanel panel_2 = new JPanel();
 		splitPane.setRightComponent(panel_2);
 		panel_2.setLayout(new BorderLayout(0, 0));
@@ -220,6 +238,7 @@ public class MainWindow {
 		panel_2.add(panel_5, BorderLayout.SOUTH);
 		
 		JButton btnNewButton = new JButton("Advanced Search");
+		//create advanced search option
 		panel_5.add(btnNewButton);
 		
 		JButton btnNewButton_1 = new JButton("Add to Dictionary");

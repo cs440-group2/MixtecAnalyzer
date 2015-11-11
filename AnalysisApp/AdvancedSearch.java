@@ -12,6 +12,13 @@ public class AdvancedSearch {
 			System.out.println(key);
 	}
 
+	/**
+	 * @param lemma
+	 * @param NumBtwn
+	 * @param position
+	 * @return
+	 * @throws FileNotFoundException
+	 */
 	public static HashMap<String, Double> AdvancedSearch(String lemma, int NumBtwn, String position) throws FileNotFoundException {
 		if (position == "preceding"){
 			

@@ -5,23 +5,23 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import javax.swing.DefaultListModel;
-import javax.swing.JFrame;
-import javax.swing.JList;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-import javax.swing.WindowConstants;
-
 public class Dictionary {
 	
 	private HashMap<String, Lemma> lemmaMap;
 	private ArrayList<String> lemmas;
 	private HashMap<String, ArrayList<String>> formMap;
 	
+	/**
+	 * @throws IOException
+	 */
 	public Dictionary() throws IOException{ //TODO: Remove
 		this("mixtec_maestro_unicode_2015-08-25.txt");
 	}
 	
+	/**
+	 * @param file
+	 * @throws IOException
+	 */
 	public Dictionary(String file) throws IOException{
 		FileReader dictionaryReader;
 		BufferedReader bReader;
@@ -70,19 +70,38 @@ public class Dictionary {
 			
 			line = bReader.readLine();
 		}
-		
-		
+		bReader.close();
 	}
 	
-	
-	
-	
-	public ArrayList<String> getLemmaList(){//returns list of lemmas
+	/**
+	 * returns list of lemmas
+	 * @return
+	 */
+	public ArrayList<String> getLemmaList(){
 		return (ArrayList<String>) lemmas.clone();
 	}
 	
+	/**
+	 * returns list of lemmas with given search term
+	 * @param refine
+	 * @return
+	 */
+	public ArrayList<String> getLemmaList(String refine){
+		ArrayList<String> returnArr = new ArrayList<String>();
+		for(String lemma : lemmas){
+			if(lemma.contains(refine)) {
+				returnArr.add(lemma);
+			}
+		}
+		return returnArr;
+	}
 	
-	public ArrayList<String> findHeaders(String term){//returns headers of associated lemmas
+	/**
+	 * returns headers of associated lemmas
+	 * @param term
+	 * @return
+	 */
+	public ArrayList<String> findHeaders(String term){
 		ArrayList<String> result;
 		if(formMap.containsKey(term)){
 			result = (ArrayList<String>) formMap.get(term).clone();
@@ -94,26 +113,35 @@ public class Dictionary {
 		return result;
 	}
 	
-	public ArrayList<String> getFormList(String term){//returns all forms of provided term, term must be a lemma
+	/**
+	 * Returns all forms of provided term, term must be a lemma.
+	 * @param term
+	 * @return
+	 */
+	public ArrayList<String> getFormList(String term){
 		return lemmaMap.get(term).getForms();
 	}
 	
-	public ArrayList<String> getGlossList(String term){//returns glosses for provided term, term must be a lemma
+	/**
+	 * returns glosses for provided term, term must be a lemma.
+	 * @param term
+	 * @return
+	 */
+	public ArrayList<String> getGlossList(String term){
 		return lemmaMap.get(term).getGlosses();
 	}
 	
-
-	
-	
-
-
+	/**
+	 *
+	 */
 	private class Lemma{
 		private String header;
 		private ArrayList<String> glosses;
 		private ArrayList<String> forms;
 		
-		
-		
+		/**
+		 * @param header
+		 */
 		public Lemma(String header){
 			this.header = header;
 			forms = new ArrayList<String>();
@@ -121,23 +149,40 @@ public class Dictionary {
 			glosses.add(header);
 		}
 		
+		/**
+		 * @param newForm
+		 */
 		public void addForm(String newForm){
 			forms.add(newForm);
 		}
 		
+		/**
+		 * @param newGloss
+		 */
 		public void addGloss(String newGloss){
 			glosses.add(newGloss);
 		}
 		
-		
+		/**
+		 * Getter for forms of lemma.
+		 * @return ArrayList<String> of forms
+		 */
 		public ArrayList<String> getForms(){
 			return (ArrayList<String>) forms.clone();
 		}
 		
+		/**
+		 * Getter for glosses.
+		 * @return ArrayList<String> of glosses
+		 */
 		public ArrayList<String> getGlosses(){
 			return (ArrayList<String>) glosses.clone();
 		}
 		
+		/**
+		 * Getter for header field.
+		 * @return header
+		 */
 		public String getHeader(){
 			return header;
 		}
@@ -169,6 +214,11 @@ public class Dictionary {
 	
 	
 	
+	/**
+	 * Main method for testing
+	 * @param args
+	 * @throws FileNotFoundException
+	 */
 	public static void main(String[] args) throws FileNotFoundException{// TODO: remove
 		try {
 			Dictionary dict = new Dictionary();
