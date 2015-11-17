@@ -21,6 +21,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -169,6 +170,7 @@ public class MainWindow {
 		JComboBox comboBox = new JComboBox();
 		comboBox.addItem("preceding");
 		comboBox.addItem("following");
+		comboBox.addItem("both");
 		comboBox.setSelectedIndex(0);
 		panel_4.add(comboBox, BorderLayout.CENTER);
 		
@@ -191,8 +193,11 @@ public class MainWindow {
 				HashMap<String, Double> results = null;
 				String position = (String) comboBox.getSelectedItem();
 				try {
-					results = Search.search(lemma, position);
+					results = Search.search(lemma, position, dict);
 				} catch (FileNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
@@ -211,7 +216,8 @@ public class MainWindow {
 				    		gloss = gloss + glosses.get(i);
 				    	}
 				    }
-					String[] arr = {key, gloss, results.get(key).toString()};
+				    NumberFormat defaultFormat = NumberFormat.getPercentInstance();
+					String[] arr = {key, gloss, defaultFormat.format(results.get(key))};
 					model.addRow(arr);
 				}
 				table.setModel(model);

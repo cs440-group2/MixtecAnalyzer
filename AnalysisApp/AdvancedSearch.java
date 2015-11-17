@@ -1,17 +1,13 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AdvancedSearch {
-	public static void main(String[] args) throws FileNotFoundException{
-		HashMap<String, Double> test = preAdvancedSearch("tu3", 1);
-		for (String key : test.keySet())
-			System.out.println(key);
-	}
-
+	
 	/**
 	 * @param lemma
 	 * @param NumBtwn
@@ -19,11 +15,29 @@ public class AdvancedSearch {
 	 * @return
 	 * @throws FileNotFoundException
 	 */
-	public static HashMap<String, Double> AdvancedSearch(String lemma, int NumBtwn, String position) throws FileNotFoundException {
+	public static HashMap<String, Double> advancedSearch(String lemma, int numBtwn, String position, Dictionary dict) throws FileNotFoundException {
 		if (position == "preceding"){
-			
+			return preAdvancedSearch(lemma, numBtwn, dict);
 		}
-		return null;
+		if (position == "following"){
+			return postAdvancedSearch(lemma, numBtwn, dict);
+		}
+		if (position == "both"){
+			HashMap<String, Double> pre = preAdvancedSearch(lemma, numBtwn, dict);
+			HashMap<String, Double> post = postAdvancedSearch(lemma, numBtwn, dict);
+			for (String key : post.keySet()){
+				if (!pre.containsKey(key)){
+					pre.put(key, post.get(key));
+				}
+				else{
+					pre.put(key, post.get(key)+pre.get(key));
+				}
+			}
+			return pre;
+		}
+		else{
+			return null;
+		}
 	}
 	
 	/**
@@ -33,7 +47,7 @@ public class AdvancedSearch {
 	 * @return HashMap of found lemmas and their frequency relative to the total lemmas found
 	 * @throws FileNotFoundException
 	 */
-	public static HashMap<String, Double> postAdvancedSearch(String lemma, int NumBtwn) throws FileNotFoundException {
+	public static HashMap<String, Double> postAdvancedSearch(String lemma, int NumBtwn, Dictionary dictionary) throws FileNotFoundException {
 
 		@SuppressWarnings("resource")
 		String file = new Scanner(new File("readme.txt")).useDelimiter("\\A").next();
@@ -54,6 +68,17 @@ public class AdvancedSearch {
 			while (m2.find() && count <= NumBtwn){
 				if (count == NumBtwn){
 					total++;
+					ArrayList<String> headers = dictionary.findHeaders(m2.group());
+					if (!headers.isEmpty()){
+						for (String i : headers)
+							if (!frequency.containsKey(i)){
+								frequency.put(i,1.0);
+							}
+							else
+							{
+								frequency.put(i,frequency.get(i) + 1);
+							}
+					}
 					String origLemma = m2.group().replaceAll("\\=" + "[\\w'\\(\\)]*", "");
 					if (origLemma.contains("(")){
 						origLemma = origLemma.replace("(", "");
@@ -83,7 +108,7 @@ public class AdvancedSearch {
 	 * @return HashMap of found lemmas and their frequency relative to the total lemmas found
 	 * @throws FileNotFoundException
 	 */
-	public static HashMap<String, Double> preAdvancedSearch(String lemma, int NumBtwn) throws FileNotFoundException {
+	public static HashMap<String, Double> preAdvancedSearch(String lemma, int NumBtwn, Dictionary dictionary) throws FileNotFoundException {
 
 		@SuppressWarnings("resource")
 		String file = new Scanner(new File("readme.txt")).useDelimiter("\\A").next();
@@ -107,6 +132,17 @@ public class AdvancedSearch {
 					Matcher m3 = p1.matcher(match);
 					if (m3.find()){
 						total++;
+						ArrayList<String> headers = dictionary.findHeaders(m1.group());
+						if (!headers.isEmpty()){
+							for (String i : headers)
+								if (!frequency.containsKey(i)){
+									frequency.put(i,1.0);
+								}
+								else
+								{
+									frequency.put(i,frequency.get(i) + 1);
+								}
+						}
 						String origLemma = m1.group().replaceAll("\\=" + "[\\w'\\(\\)]*", "");
 						if (origLemma.contains("(")){
 							origLemma = origLemma.replace("(", "");
