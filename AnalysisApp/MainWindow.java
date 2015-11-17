@@ -99,7 +99,6 @@ public class MainWindow {
 		frame.setBounds(100, 100, 1000, 800);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		
 		dict = new Dictionary();
 		lemmaList = new DefaultListModel();
 		lemmas = dict.getLemmaList();
@@ -247,6 +246,11 @@ public class MainWindow {
 		panel_2.add(panel_5, BorderLayout.SOUTH);
 		
 		JButton btnNewButton = new JButton("Advanced Search");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
 		//create advanced search option
 		panel_5.add(btnNewButton);
 		
