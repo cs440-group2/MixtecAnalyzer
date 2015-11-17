@@ -66,6 +66,8 @@ public class MainWindow {
 	private Dictionary dict;
 	private DefaultListModel lemmaList;
 	private ArrayList<String> lemmas;
+	private String lemma;
+	private JLabel lbl_1;
 
 	/**
 	 * Launch the application.
@@ -183,7 +185,7 @@ public class MainWindow {
 		
 		btnSearch.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String lemma = "";
+				lemma = "";
 				if(textField.getText().equals("")){
 					lemma = (String) list.getSelectedValue();
 				}
@@ -220,6 +222,16 @@ public class MainWindow {
 					String[] arr = {key, gloss, defaultFormat.format(results.get(key))};
 					model.addRow(arr);
 				}
+				String gloss = "";
+				ArrayList<String> glosses = dict.getGlossList(lemma);
+				for(int i = 1; i < glosses.size(); i++) {
+		    		if(i!=1) {
+		    			gloss = gloss + ", ";
+		    		}
+		    		gloss = gloss + glosses.get(i);
+		    	}
+				
+				lbl_1.setText("Found the lemma \""+lemma+"\" (" + gloss + ") " + results.keySet().size()+" times.");
 				table.setModel(model);
 				DefaultRowSorter sorter = new TableRowSorter(model);
 				table.setRowSorter(sorter);
@@ -260,8 +272,12 @@ public class MainWindow {
 		//create advanced search option
 		panel_5.add(btnNewButton);
 		
-		JButton btnNewButton_1 = new JButton("Add to Dictionary");
-		panel_5.add(btnNewButton_1);
+		//TODO: Add to dictionary button
+		//JButton btnNewButton_1 = new JButton("Add to Dictionary");
+		//panel_5.add(btnNewButton_1);
+		
+		lbl_1 = new JLabel();
+		panel_2.add(lbl_1, BorderLayout.NORTH);
 		
 	}
  
