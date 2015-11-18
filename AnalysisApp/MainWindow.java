@@ -290,6 +290,7 @@ public class MainWindow {
 	
 	public void newCorpus(String filename){
 		corpus = new Corpus(filename);
+		new Search(corpus);
 	}
 	
 	public void newDict(String filename){

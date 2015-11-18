@@ -55,7 +55,13 @@ public class AdvancedSearch {
 
 		char last = lemma.charAt(lemma.length()-1);
 		String derLemma = lemma.substring(0, lemma.length() - 1) + "\\(" + last + "\\)";
-		Pattern p1 = Pattern.compile("(" +lemma +"|"+derLemma+")" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
+		
+		String search = lemma + "|" + derLemma;
+		for (String form: dictionary.getFormList(lemma)){
+			search = search + "|" + form;
+		}
+		
+		Pattern p1 = Pattern.compile("(" +search+")" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
 		Pattern p2 = Pattern.compile("[\\w]+" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
 
 		Matcher m1 = p1.matcher(file);
@@ -116,7 +122,13 @@ public class AdvancedSearch {
 
 		char last = lemma.charAt(lemma.length()-1);
 		String derLemma = lemma.substring(0, lemma.length() - 1) + "\\(" + last + "\\)";
-		Pattern p1 = Pattern.compile("(" +lemma +"|"+derLemma+")" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
+		
+		String search = lemma + "|" + derLemma;
+		for (String form: dictionary.getFormList(lemma)){
+			search = search + "|" + form;
+		}
+		
+		Pattern p1 = Pattern.compile("(" +search+")" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
 		Pattern p2 = Pattern.compile("[\\w]+" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
 
 		Matcher m1 = p2.matcher(file);

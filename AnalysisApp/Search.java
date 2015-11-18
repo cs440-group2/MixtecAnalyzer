@@ -4,6 +4,11 @@ import java.util.regex.*;
 
 public class Search {
 
+	static Corpus corpus;
+
+	public Search(Corpus corpus) {
+		this.corpus = corpus;
+	}
 	/**
 	 * @param lemma
 	 * @param position
@@ -13,14 +18,38 @@ public class Search {
 	public static HashMap<String, Double> search(String lemma, String position, Dictionary dict) throws IOException{
 
 		if (position == "preceding"){
-			return preSearch(lemma, dict);
+			HashMap<String, Double> map = new HashMap<String, Double>();
+			for (String file : corpus.getCorpus()){
+				HashMap<String, Double> curr = preSearch(lemma, dict, file);
+				for (String key : curr.keySet()){
+					if (!map.containsKey(key)){
+						map.put(key, curr.get(key));
+					}
+					else{
+						map.put(key, curr.get(key)+map.get(key));
+					}
+				}
+				return map;
+			}
 		}
 		if (position == "following"){
-			return postSearch(lemma, dict);
+			HashMap<String, Double> map = new HashMap<String, Double>();
+			for (String file : corpus.getCorpus()){
+				HashMap<String, Double> curr = postSearch(lemma, dict, file);
+				for (String key : curr.keySet()){
+					if (!map.containsKey(key)){
+						map.put(key, curr.get(key));
+					}
+					else{
+						map.put(key, curr.get(key)+map.get(key));
+					}
+				}
+				return map;
+			}
 		}
 		if (position == "both"){
-			HashMap<String, Double> pre = preSearch(lemma, dict);
-			HashMap<String, Double> post = postSearch(lemma, dict);
+			HashMap<String, Double> pre = search(lemma, "preeceeding", dict);
+			HashMap<String, Double> post = search(lemma, "following", dict);
 			for (String key : post.keySet()){
 				if (!pre.containsKey(key)){
 					pre.put(key, post.get(key));
@@ -42,15 +71,18 @@ public class Search {
 	 * @return HashMap of found lemmas following searched lemma and their frequency relative to the total lemmas found
 	 * @throws FileNotFoundException
 	 */
-	public static HashMap<String, Double> postSearch(String lemma, Dictionary dictionary) throws FileNotFoundException {
+	public static HashMap<String, Double> postSearch(String lemma, Dictionary dictionary, String file) throws FileNotFoundException {
 
-		@SuppressWarnings("resource")
-		String file = new Scanner(new File("readme.txt")).useDelimiter("\\A").next();
 		int total = 0;
 
 		char last = lemma.charAt(lemma.length()-1);
 		String derLemma = lemma.substring(0, lemma.length() - 1) + "\\(" + last + "\\)";
-		Pattern p1 = Pattern.compile("(" +lemma +"|"+derLemma+")" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
+
+		String search = lemma + "|" + derLemma;
+		for (String form: dictionary.getFormList(lemma)){
+			search = search + "|" + form;
+		}
+		Pattern p1 = Pattern.compile("("+search+")" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
 		Pattern p2 = Pattern.compile("[\\w|-]+" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
 
 		Matcher m1 = p1.matcher(file);
@@ -99,15 +131,19 @@ public class Search {
 	 * @return HashMap of found lemmas preceding searched lemma and their frequency relative to the total lemmas found
 	 * @throws FileNotFoundException
 	 */
-	public static HashMap<String, Double> preSearch(String lemma, Dictionary dictionary) throws FileNotFoundException {
+	public static HashMap<String, Double> preSearch(String lemma, Dictionary dictionary, String file) throws FileNotFoundException {
 
-		@SuppressWarnings("resource")
-		String file = new Scanner(new File("readme.txt")).useDelimiter("\\A").next();
 		int total = 0;
 
 		char last = lemma.charAt(lemma.length()-1);
 		String derLemma = lemma.substring(0, lemma.length() - 1) + "\\(" + last + "\\)";
-		Pattern p1 = Pattern.compile("(" +lemma +"|"+derLemma+")" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
+
+		String search = lemma + "|" + derLemma;
+		for (String form: dictionary.getFormList(lemma)){
+			search = search + "|" + form;
+		}
+
+		Pattern p1 = Pattern.compile("(" +search+")" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
 		Pattern p2 = Pattern.compile("[\\w|-]+" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
 
 		Matcher m1 = p2.matcher(file);

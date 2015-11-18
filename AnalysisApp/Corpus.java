@@ -102,6 +102,10 @@ public class Corpus {
 		return corpus;
 	}
 	
+	public ArrayList<File> getFiles() {
+		return transFiles;
+	}
+	
 	//test
 	public static void main(String[] args) {
 		
