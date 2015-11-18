@@ -66,6 +66,7 @@ public class MainWindow {
 	private Dictionary dict;
 	private DefaultListModel lemmaList;
 	private ArrayList<String> lemmas;
+	private Corpus corpus;
 	private String lemma;
 	private JLabel lbl_1;
 
@@ -102,12 +103,6 @@ public class MainWindow {
 		frame.setBounds(100, 100, 1000, 800);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		dict = new Dictionary();
-		lemmaList = new DefaultListModel();
-		lemmas = dict.getLemmaList();
-		for(int i = 0; i < lemmas.size(); i++){
-			lemmaList.addElement(lemmas.get(i));
-		}
 		
 		//Set up menu bar
 		JMenuBar menuBar = new JMenuBar();
@@ -123,15 +118,25 @@ public class MainWindow {
 				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 			    int returnVal = chooser.showOpenDialog(frame);
 			    if(returnVal == JFileChooser.APPROVE_OPTION) {
-			       System.out.println("You chose to open this folder: " +
-			            chooser.getSelectedFile().getName());
+			       newCorpus(chooser.getSelectedFile().getAbsolutePath());
 			    }
 			}
 		});
 		mnNewMenu.add(mntmFile);
 		
-		JMenuItem mntmNewMenuItem = new JMenuItem("Settings");
-		mnNewMenu.add(mntmNewMenuItem);
+		JMenuItem mntmDict = new JMenuItem("Load Dictionary");
+		
+		mntmDict.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser chooser = new JFileChooser();
+				chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			    int returnVal = chooser.showOpenDialog(frame);
+			    if(returnVal == JFileChooser.APPROVE_OPTION) {
+			      newDict(chooser.getSelectedFile().getAbsolutePath());
+			    }
+			}
+		});
+		mnNewMenu.add(mntmDict);
 		
 		JPanel panel = new JPanel();
 		frame.getContentPane().add(panel, BorderLayout.CENTER);
@@ -154,7 +159,8 @@ public class MainWindow {
 		textField.setHorizontalAlignment(SwingConstants.CENTER);
 		textField.setColumns(10);
 		
-		JList list = new JList();
+		list = new JList();
+
 		list.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -163,7 +169,8 @@ public class MainWindow {
 		});
 		JScrollPane listScroll = new JScrollPane(list);
 		panel_1.add(listScroll, BorderLayout.CENTER);
-		list.setModel(lemmaList);
+		
+		//newDict();
 		
 		JPanel panel_4 = new JPanel();
 		panel_1.add(panel_4, BorderLayout.SOUTH);
@@ -278,6 +285,27 @@ public class MainWindow {
 		
 		lbl_1 = new JLabel();
 		panel_2.add(lbl_1, BorderLayout.NORTH);
+		
+	}
+	
+	public void newCorpus(String filename){
+		corpus = new Corpus(filename);
+	}
+	
+	public void newDict(String filename){
+		try {
+			dict = new Dictionary(filename);
+			lemmaList = new DefaultListModel();
+			lemmas = dict.getLemmaList();
+			for(int i = 0; i < lemmas.size(); i++){
+				lemmaList.addElement(lemmas.get(i));
+			}
+			
+			list.setModel(lemmaList);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
  
