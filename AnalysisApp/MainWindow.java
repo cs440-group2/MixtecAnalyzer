@@ -183,49 +183,57 @@ public class MainWindow {
 					else {
 						lemma = textField.getText();
 					}
-					HashMap<String, Double> results = null;
-					String position = (String) comboBox.getSelectedItem();
-					try {
-						results = Search.search(lemma, position, dict);
-					} catch (FileNotFoundException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+					if(corpus == null){
+						JOptionPane.showMessageDialog(frame, "Please load transcriptions first.",
+								"Load Transcriptions", JOptionPane.ERROR_MESSAGE);
 					}
-					model = new DefaultTableModel();
-					model.addColumn("Appearing with search term");
-					model.addColumn("Gloss (meaning)");
-					model.addColumn("Frequency");
-					for (String key : results.keySet()) {
-						String gloss = "";
-						if(dict.getLemmaList().contains(key)) {
-							ArrayList<String> glosses = dict.getGlossList(key);
-							for(int i = 1; i < glosses.size(); i++) {
-								if(i!=1) {
-									gloss = gloss + ", ";
-								}
-								gloss = gloss + glosses.get(i);
-							}
-						}
-						NumberFormat defaultFormat = NumberFormat.getPercentInstance();
-						String[] arr = {key, gloss, defaultFormat.format(results.get(key))};
-						model.addRow(arr);
-					}
-					String gloss = "";
-					ArrayList<String> glosses = dict.getGlossList(lemma);
-					for(int i = 1; i < glosses.size(); i++) {
-						if(i!=1) {
-							gloss = gloss + ", ";
-						}
-						gloss = gloss + glosses.get(i);
-					}
+					else{
 
-					lbl_1.setText("Found the lemma \""+lemma+"\" (" + gloss + ") " + results.keySet().size()+" times.");
-					table.setModel(model);
-					DefaultRowSorter sorter = new TableRowSorter(model);
-					table.setRowSorter(sorter);
+
+						HashMap<String, Double> results = null;
+						String position = (String) comboBox.getSelectedItem();
+						try {
+							results = Search.search(lemma, position, dict);
+						} catch (FileNotFoundException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						model = new DefaultTableModel();
+						model.addColumn("Appearing with search term");
+						model.addColumn("Gloss (meaning)");
+						model.addColumn("Frequency");
+						for (String key : results.keySet()) {
+							String gloss = "";
+							if(dict.getLemmaList().contains(key)) {
+								ArrayList<String> glosses = dict.getGlossList(key);
+								for(int i = 1; i < glosses.size(); i++) {
+									if(i!=1) {
+										gloss = gloss + ", ";
+									}
+									gloss = gloss + glosses.get(i);
+								}
+							}
+							NumberFormat defaultFormat = NumberFormat.getPercentInstance();
+							String[] arr = {key, gloss, defaultFormat.format(results.get(key))};
+							model.addRow(arr);
+						}
+						String gloss = "";
+						ArrayList<String> glosses = dict.getGlossList(lemma);
+						for(int i = 1; i < glosses.size(); i++) {
+							if(i!=1) {
+								gloss = gloss + ", ";
+							}
+							gloss = gloss + glosses.get(i);
+						}
+
+						lbl_1.setText("Found the lemma \""+lemma+"\" (" + gloss + ") " + results.keySet().size()+" times.");
+						table.setModel(model);
+						DefaultRowSorter sorter = new TableRowSorter(model);
+						table.setRowSorter(sorter);
+					}
 				}
 			}
 		});
