@@ -232,11 +232,11 @@ public class MainWindow {
 
 		textField.addKeyListener(new KeyAdapter() {
 			@Override
-			public void keyTyped(KeyEvent e) {
+			public void keyReleased(KeyEvent e) {
 				if(dict == null) {
+					textField.setText("");
 					JOptionPane.showMessageDialog(frame,
 							"Please load dictionary first.", "Load Dictionary", JOptionPane.ERROR_MESSAGE);
-					textField.setText("");
 				}
 				else {
 					String text = textField.getText();
