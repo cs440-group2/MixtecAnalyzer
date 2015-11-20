@@ -9,10 +9,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.DefaultRowSorter;
@@ -47,6 +47,7 @@ public class MainWindow {
 	private ArrayList<String> lemmas;
 	private Corpus corpus;
 	private String lemma;
+	private String position;
 	private JLabel lbl_1;
 
 	/**
@@ -191,7 +192,7 @@ public class MainWindow {
 
 
 						HashMap<String, Double> results = null;
-						String position = (String) comboBox.getSelectedItem();
+						position = (String) comboBox.getSelectedItem();
 						try {
 							results = Search.search(lemma, position, dict);
 						} catch (FileNotFoundException e1) {
@@ -217,7 +218,7 @@ public class MainWindow {
 								}
 							}
 							NumberFormat defaultFormat = NumberFormat.getPercentInstance();
-							String[] arr = {key, gloss, defaultFormat.format(results.get(key))};
+							String[] arr = {key, gloss, new DecimalFormat("##.#").format(results.get(key)*100)};
 							model.addRow(arr);
 						}
 						String gloss = "";
@@ -270,13 +271,65 @@ public class MainWindow {
 		JPanel panel_5 = new JPanel();
 		panel_2.add(panel_5, BorderLayout.SOUTH);
 
-		JButton btnNewButton = new JButton("Advanced Search (TODO)");
+		JButton btnNewButton = new JButton("Advanced Search");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				Object[] possibilities = {"0","1", "2", "3", "4"};
+				String s = (String)JOptionPane.showInputDialog(
+						frame,
+						"Select how many words you want inbetween:\n",
+						"Advanced Search",
+						JOptionPane.PLAIN_MESSAGE,
+						null,
+						possibilities,
+						"0");
+				int numBtwn = Integer.parseInt(s);
 
+				HashMap<String, Double> results = null;
+				try {
+					results = AdvancedSearch.advancedSearch(lemma, numBtwn, position, dict);
+				} catch (FileNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				model = new DefaultTableModel();
+				model.addColumn("Appearing with search term");
+				model.addColumn("Gloss (meaning)");
+				model.addColumn("Frequency");
+				for (String key : results.keySet()) {
+					String gloss = "";
+					if(dict.getLemmaList().contains(key)) {
+						ArrayList<String> glosses = dict.getGlossList(key);
+						for(int i = 1; i < glosses.size(); i++) {
+							if(i!=1) {
+								gloss = gloss + ", ";
+							}
+							gloss = gloss + glosses.get(i);
+						}
+					}
+					NumberFormat defaultFormat = NumberFormat.getPercentInstance();
+					String[] arr = {key, gloss, new DecimalFormat("##.#").format(results.get(key)*100)};
+					model.addRow(arr);
+				}
+				String gloss = "";
+				ArrayList<String> glosses = dict.getGlossList(lemma);
+				for(int i = 1; i < glosses.size(); i++) {
+					if(i!=1) {
+						gloss = gloss + ", ";
+					}
+					gloss = gloss + glosses.get(i);
+				}
+
+				lbl_1.setText("Found the lemma \""+lemma+"\" (" + gloss + ") " + results.keySet().size()+" times with " + numBtwn +" words inbetween.");
+				table.setModel(model);
+				DefaultRowSorter sorter = new TableRowSorter(model);
+				table.setRowSorter(sorter);
 			}
 		});
-		//create advanced search option
+
 		panel_5.add(btnNewButton);
 
 		//TODO: Add to dictionary button

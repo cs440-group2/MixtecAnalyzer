@@ -16,15 +16,40 @@ public class AdvancedSearch {
 	 * @throws FileNotFoundException
 	 */
 	public static HashMap<String, Double> advancedSearch(String lemma, int numBtwn, String position, Dictionary dict) throws FileNotFoundException {
+		Corpus corpus = Search.corpus;
 		if (position == "preceding"){
-			return preAdvancedSearch(lemma, numBtwn, dict);
+			HashMap<String, Double> map = new HashMap<String, Double>();
+			for (String file : corpus.getCorpus()){
+				HashMap<String, Double> curr = preAdvancedSearch(lemma, numBtwn, dict, file);
+				for (String key : curr.keySet()){
+					if (!map.containsKey(key)){
+						map.put(key, curr.get(key));
+					}
+					else{
+						map.put(key, curr.get(key)+map.get(key));
+					}
+				}
+				return map;
+			}
 		}
 		if (position == "following"){
-			return postAdvancedSearch(lemma, numBtwn, dict);
+			HashMap<String, Double> map = new HashMap<String, Double>();
+			for (String file : corpus.getCorpus()){
+				HashMap<String, Double> curr = postAdvancedSearch(lemma, numBtwn, dict, file);
+				for (String key : curr.keySet()){
+					if (!map.containsKey(key)){
+						map.put(key, curr.get(key));
+					}
+					else{
+						map.put(key, curr.get(key)+map.get(key));
+					}
+				}
+				return map;
+			}
 		}
 		if (position == "both"){
-			HashMap<String, Double> pre = preAdvancedSearch(lemma, numBtwn, dict);
-			HashMap<String, Double> post = postAdvancedSearch(lemma, numBtwn, dict);
+			HashMap<String, Double> pre = advancedSearch(lemma, numBtwn, "preeceeding", dict);
+			HashMap<String, Double> post = advancedSearch(lemma, numBtwn, "following", dict);
 			for (String key : post.keySet()){
 				if (!pre.containsKey(key)){
 					pre.put(key, post.get(key));
@@ -47,10 +72,7 @@ public class AdvancedSearch {
 	 * @return HashMap of found lemmas and their frequency relative to the total lemmas found
 	 * @throws FileNotFoundException
 	 */
-	public static HashMap<String, Double> postAdvancedSearch(String lemma, int NumBtwn, Dictionary dictionary) throws FileNotFoundException {
-
-		@SuppressWarnings("resource")
-		String file = new Scanner(new File("readme.txt")).useDelimiter("\\A").next();
+	public static HashMap<String, Double> postAdvancedSearch(String lemma, int NumBtwn, Dictionary dictionary, String file) {
 		int total = 0;
 
 		char last = lemma.charAt(lemma.length()-1);
@@ -114,10 +136,8 @@ public class AdvancedSearch {
 	 * @return HashMap of found lemmas and their frequency relative to the total lemmas found
 	 * @throws FileNotFoundException
 	 */
-	public static HashMap<String, Double> preAdvancedSearch(String lemma, int NumBtwn, Dictionary dictionary) throws FileNotFoundException {
+	public static HashMap<String, Double> preAdvancedSearch(String lemma, int NumBtwn, Dictionary dictionary, String file){
 
-		@SuppressWarnings("resource")
-		String file = new Scanner(new File("readme.txt")).useDelimiter("\\A").next();
 		int total = 0;
 
 		char last = lemma.charAt(lemma.length()-1);
