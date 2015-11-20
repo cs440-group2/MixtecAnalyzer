@@ -89,7 +89,7 @@ public class Dictionary {
 	public ArrayList<String> getLemmaList(String refine){
 		ArrayList<String> returnArr = new ArrayList<String>();
 		for(String lemma : lemmas){
-			if(lemma.contains(refine)) {
+			if(lemma.startsWith(refine)) {
 				returnArr.add(lemma);
 			}
 		}
