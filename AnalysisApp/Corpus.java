@@ -16,7 +16,7 @@ import javax.swing.JFileChooser;
 public class Corpus {
 
 	private String directoryName;
-	private ArrayList<String> corpus;
+	public ArrayList<String> corpus;
 	private ArrayList<File> transFiles;
 	
 	
