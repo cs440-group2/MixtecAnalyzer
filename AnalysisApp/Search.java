@@ -16,10 +16,12 @@ public class Search {
 	 * @throws IOException 
 	 */
 	public static HashMap<String, Double> search(String lemma, String position, Dictionary dict) throws IOException{
-
+		
 		if (position == "preceding"){
 			HashMap<String, Double> map = new HashMap<String, Double>();
+			int count = 0;
 			for (String file : corpus.getCorpus()){
+				count ++;
 				HashMap<String, Double> curr = preSearch(lemma, dict, file);
 				for (String key : curr.keySet()){
 					if (!map.containsKey(key)){
@@ -29,8 +31,8 @@ public class Search {
 						map.put(key, curr.get(key)+map.get(key));
 					}
 				}
-				return map;
 			}
+			return map;
 		}
 		if (position == "following"){
 			HashMap<String, Double> map = new HashMap<String, Double>();
@@ -44,8 +46,8 @@ public class Search {
 						map.put(key, curr.get(key)+map.get(key));
 					}
 				}
-				return map;
 			}
+			return map;
 		}
 		if (position == "both"){
 			HashMap<String, Double> pre = search(lemma, "preeceeding", dict);
