@@ -137,7 +137,6 @@ public class AdvancedSearch {
 	 * @throws FileNotFoundException
 	 */
 	public static HashMap<String, Double> preAdvancedSearch(String lemma, int NumBtwn, Dictionary dictionary, String file){
-
 		int total = 0;
 
 		char last = lemma.charAt(lemma.length()-1);

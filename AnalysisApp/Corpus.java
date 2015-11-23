@@ -31,6 +31,7 @@ public class Corpus {
 		
 		listFiles(this.directoryName, transFiles);
 		showFiles(transFiles);
+		System.out.println(transFiles.size());
 	}
 
 	/**

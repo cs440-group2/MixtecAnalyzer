@@ -48,7 +48,7 @@ public class Search {
 			}
 		}
 		if (position == "both"){
-			HashMap<String, Double> pre = search(lemma, "preeceeding", dict);
+			HashMap<String, Double> pre = search(lemma, "preceding", dict);
 			HashMap<String, Double> post = search(lemma, "following", dict);
 			for (String key : post.keySet()){
 				if (!pre.containsKey(key)){
@@ -89,6 +89,7 @@ public class Search {
 		Matcher m2 = p2.matcher(file);
 
 		HashMap<String, Double> frequency = new HashMap<String, Double>();
+		
 		while (m1.find()) {
 			if (m2.find(m1.end())){
 				total++;
