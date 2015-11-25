@@ -304,6 +304,7 @@ public class MainWindow {
 				int numBtwn;
 				try{
 					numBtwn = Integer.parseInt(s);
+					
 				}catch(Exception ex){
 					return;
 				}
