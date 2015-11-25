@@ -204,10 +204,21 @@ public class MainWindow {
 						}
 						
 						int total = results.get("TERM_TOTAL");
-						model = new DefaultTableModel();
+						model = new DefaultTableModel(){
+							@Override
+							public Class getColumnClass(int column){
+								if(column == 2){
+									return Double.class;
+								}
+								else{
+									return String.class;
+								}
+							}
+						};
 						model.addColumn("Appearing with search term");
 						model.addColumn("Gloss (meaning)");
 						model.addColumn("Frequency");
+						
 						DecimalFormat format = new DecimalFormat("##.#");
 						for (String key : results.keySet()) {
 							if(!key.equals("TERM_TOTAL")){
@@ -222,8 +233,8 @@ public class MainWindow {
 									}
 								}
 								NumberFormat defaultFormat = NumberFormat.getPercentInstance();
-								double freq = (results.get(key)/(double) total)*100;
-								String[] arr = {key, gloss, format.format(freq)};
+								String freqString = format.format((results.get(key)/(double) total)*100);
+								Object[] arr = {key, gloss, Double.parseDouble(freqString)};
 								model.addRow(arr);
 							}
 						}
