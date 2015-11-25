@@ -283,7 +283,13 @@ public class MainWindow {
 						null,
 						possibilities,
 						"0");
-				int numBtwn = Integer.parseInt(s);
+
+				int numBtwn;
+				try{
+					numBtwn = Integer.parseInt(s);
+				}catch(Exception ex){
+					return;
+				}
 
 				HashMap<String, Double> results = null;
 				try {
