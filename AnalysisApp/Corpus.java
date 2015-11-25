@@ -1,4 +1,3 @@
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,7 +15,7 @@ import javax.swing.JFileChooser;
 public class Corpus {
 
 	private String directoryName;
-	private ArrayList<String> corpus;
+	public ArrayList<String> corpus;
 	private ArrayList<File> transFiles;
 	
 	
@@ -31,6 +30,7 @@ public class Corpus {
 		
 		listFiles(this.directoryName, transFiles);
 		showFiles(transFiles);
+		System.out.println(transFiles.size());
 	}
 
 	/**
