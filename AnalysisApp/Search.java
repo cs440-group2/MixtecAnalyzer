@@ -15,14 +15,12 @@ public class Search {
 	 * @return
 	 * @throws IOException 
 	 */
-	public static HashMap<String, Double> search(String lemma, String position, Dictionary dict) throws IOException{
+	public static HashMap<String, Integer> search(String lemma, String position, Dictionary dict) throws IOException{
 		
 		if (position == "preceding"){
-			HashMap<String, Double> map = new HashMap<String, Double>();
-			int count = 0;
+			HashMap<String, Integer> map = new HashMap<String, Integer>();
 			for (String file : corpus.getCorpus()){
-				count ++;
-				HashMap<String, Double> curr = preSearch(lemma, dict, file);
+				HashMap<String, Integer> curr = preSearch(lemma, dict, file);
 				for (String key : curr.keySet()){
 					if (!map.containsKey(key)){
 						map.put(key, curr.get(key));
@@ -35,9 +33,9 @@ public class Search {
 			return map;
 		}
 		if (position == "following"){
-			HashMap<String, Double> map = new HashMap<String, Double>();
+			HashMap<String, Integer> map = new HashMap<String, Integer>();
 			for (String file : corpus.getCorpus()){
-				HashMap<String, Double> curr = postSearch(lemma, dict, file);
+				HashMap<String, Integer> curr = postSearch(lemma, dict, file);
 				for (String key : curr.keySet()){
 					if (!map.containsKey(key)){
 						map.put(key, curr.get(key));
@@ -50,8 +48,8 @@ public class Search {
 			return map;
 		}
 		if (position == "both"){
-			HashMap<String, Double> pre = search(lemma, "preceding", dict);
-			HashMap<String, Double> post = search(lemma, "following", dict);
+			HashMap<String, Integer> pre = search(lemma, "preceding", dict);
+			HashMap<String, Integer> post = search(lemma, "following", dict);
 			for (String key : post.keySet()){
 				if (!pre.containsKey(key)){
 					pre.put(key, post.get(key));
@@ -73,7 +71,7 @@ public class Search {
 	 * @return HashMap of found lemmas following searched lemma and their frequency relative to the total lemmas found
 	 * @throws FileNotFoundException
 	 */
-	public static HashMap<String, Double> postSearch(String lemma, Dictionary dictionary, String file) throws FileNotFoundException {
+	public static HashMap<String, Integer> postSearch(String lemma, Dictionary dictionary, String file) throws FileNotFoundException {
 
 		int total = 0;
 
@@ -90,7 +88,7 @@ public class Search {
 		Matcher m1 = p1.matcher(file);
 		Matcher m2 = p2.matcher(file);
 
-		HashMap<String, Double> frequency = new HashMap<String, Double>();
+		HashMap<String, Integer> frequency = new HashMap<String, Integer>();
 		
 		while (m1.find()) {
 			if (m2.find(m1.end())){
@@ -99,7 +97,7 @@ public class Search {
 				if (!headers.isEmpty()){
 					for (String i : headers)
 						if (!frequency.containsKey(i)){
-							frequency.put(i,1.0);
+							frequency.put(i,1);
 						}
 						else
 						{
@@ -113,7 +111,7 @@ public class Search {
 						origLemma = origLemma.replace(")", "");
 					}
 					if (!frequency.containsKey(origLemma)){
-						frequency.put(origLemma,1.0);
+						frequency.put(origLemma,1);
 					}
 					else
 					{
@@ -122,9 +120,7 @@ public class Search {
 				}
 			}
 		}
-		for (String key : frequency.keySet()) {
-			frequency.put(key,frequency.get(key)/total);
-		}
+		frequency.put("TERM_TOTAL", total);
 		return frequency;
 	}
 	/**
@@ -134,7 +130,7 @@ public class Search {
 	 * @return HashMap of found lemmas preceding searched lemma and their frequency relative to the total lemmas found
 	 * @throws FileNotFoundException
 	 */
-	public static HashMap<String, Double> preSearch(String lemma, Dictionary dictionary, String file) throws FileNotFoundException {
+	public static HashMap<String, Integer> preSearch(String lemma, Dictionary dictionary, String file) throws FileNotFoundException {
 
 		int total = 0;
 
@@ -152,7 +148,7 @@ public class Search {
 		Matcher m1 = p2.matcher(file);
 		Matcher m2 = p2.matcher(file);
 
-		HashMap<String, Double> frequency = new HashMap<String, Double>();
+		HashMap<String, Integer> frequency = new HashMap<String, Integer>();
 		while (m1.find()) {
 			if (m2.find(m1.end())){
 				String match = m2.group();
@@ -163,7 +159,7 @@ public class Search {
 					if (!headers.isEmpty()){
 						for (String i : headers)
 							if (!frequency.containsKey(i)){
-								frequency.put(i,1.0);
+								frequency.put(i, 1);
 							}
 							else
 							{
@@ -177,7 +173,7 @@ public class Search {
 							origLemma = origLemma.replace(")", "");
 						}
 						if (!frequency.containsKey(origLemma)){
-							frequency.put(origLemma,1.0);
+							frequency.put(origLemma,1);
 						}
 						else
 						{
@@ -187,9 +183,7 @@ public class Search {
 				}
 			}
 		}
-		for (String key : frequency.keySet()) {
-			frequency.put(key,frequency.get(key)/total);
-		}
+		frequency.put("TERM_TOTAL", total);
 		return frequency;
 	}
 }
