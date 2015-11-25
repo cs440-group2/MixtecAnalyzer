@@ -3,19 +3,20 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class Dictionary {
 	
 	private HashMap<String, Lemma> lemmaMap;
-	private ArrayList<String> lemmas;
-	private HashMap<String, ArrayList<String>> formMap;
+	private ArrayList<String> lemmas;  
+	private HashMap<String, ArrayList<String>> formMap; //forms -> list of associated lemmas
 	
 	/**
 	 * @throws IOException
 	 */
 	public Dictionary() throws IOException{ //TODO: Remove
-		this("mixtec_maestro_unicode_2015-08-25.txt");
+		this("C:\\Users\\Ian\\Desktop\\New folder\\mixtec_maestro_unicode_2015-08-25.txt");
 	}
 	
 	/**
@@ -36,20 +37,28 @@ public class Dictionary {
 		
 		String currentLemmaString = "";
 		Lemma currentLemma = null;
-		ArrayList<String> formList = null;
+		String part = "Unknown";
+		ArrayList<String> newForms = new ArrayList<String>();
 		
-
 		while(line != null){
 			if(line.startsWith("\\lx ")){
+				if(!newForms.isEmpty()){
+					for(String item : newForms){
+						currentLemma.addForm(item, part);
+					}
+				}
+				part = "Unknown";
+				newForms = new ArrayList<String>();
 				String newLemmaString = line.substring(4);
+				newForms.add(newLemmaString);
 				if(!newLemmaString.equals(currentLemmaString)){
 					lemmas.add(newLemmaString);
 					currentLemma = new Lemma(newLemmaString);
 					lemmaMap.put(newLemmaString, currentLemma);
 					currentLemmaString = newLemmaString;
-					formList = new ArrayList<String>();
-					formList.add(currentLemmaString);
-					formMap.put(currentLemmaString, formList);
+					ArrayList<String> aLemmas = new ArrayList<String>();
+					aLemmas.add(currentLemmaString);
+					formMap.put(currentLemmaString, aLemmas);
 				}
 			}
 			else if(line.startsWith("\\glosa ")){
@@ -61,11 +70,22 @@ public class Dictionary {
 				String[] entries = entry.split(";");
 				for(String item : entries){
 					item = item.trim();
-					if(!formList.contains(item)){
-						formList.add(item);
-						currentLemma.addForm(item);
+					ArrayList<String> aLemmas;
+					if(!formMap.containsKey(item)){
+						aLemmas = new ArrayList<String>();
+						formMap.put(item, aLemmas);
 					}
+					else{
+						aLemmas = formMap.get(item);
+					}
+					if(!aLemmas.contains(currentLemmaString)){
+						aLemmas.add(currentLemmaString);
+					}
+					newForms.add(item);
 				}
+			}
+			else if(line.startsWith("\\catgr ")){
+				part = line.substring(7);
 			}
 			
 			line = bReader.readLine();
@@ -77,7 +97,7 @@ public class Dictionary {
 	 * returns list of lemmas
 	 * @return
 	 */
-	public ArrayList<String> getLemmaList(){
+	public ArrayList<String> getLemmaList(){//TODO: switch lemmas to lemmaMap keys
 		return (ArrayList<String>) lemmas.clone();
 	}
 	
@@ -131,29 +151,55 @@ public class Dictionary {
 		return lemmaMap.get(term).getGlosses();
 	}
 	
+	public ArrayList<String> getParts(String term, String lemmaString){//limited to parts as form of a specific lemma
+		Lemma lemma = lemmaMap.get(lemmaString);
+		return lemma.getParts(term);
+	}
+	
+	public ArrayList<String> getParts(String term){//all parts as form of all associated lemmas
+		ArrayList<String> result = new ArrayList<String>();
+		ArrayList<String> aLemmas = formMap.get(term);
+		for(String lemmaString : aLemmas){
+			result.addAll(getParts(term, lemmaString));
+		}
+		return result;
+	}
+	
 	/**
 	 *
 	 */
 	private class Lemma{
 		private String header;
 		private ArrayList<String> glosses;
-		private ArrayList<String> forms;
+		private ArrayList<String> formList;
+		private HashMap<String, ArrayList<String>> forms;
 		
 		/**
 		 * @param header
 		 */
 		public Lemma(String header){
 			this.header = header;
-			forms = new ArrayList<String>();
+			formList = new ArrayList<String>();
 			glosses = new ArrayList<String>();
 			glosses.add(header);
+			forms = new HashMap<String, ArrayList<String>>();//form of lemma ->list of parts for form
 		}
 		
 		/**
 		 * @param newForm
 		 */
-		public void addForm(String newForm){
-			forms.add(newForm);
+		public void addForm(String form, String part){
+			if(forms.containsKey(form)){
+				ArrayList<String> list = forms.get(form);
+				if(!list.contains(part)){
+					list.add(part);
+				}
+			}
+			else{
+				ArrayList<String> list = new ArrayList<String>();
+				list.add(part);
+				forms.put(form, list);
+			}
 		}
 		
 		/**
@@ -168,7 +214,7 @@ public class Dictionary {
 		 * @return ArrayList<String> of forms
 		 */
 		public ArrayList<String> getForms(){
-			return (ArrayList<String>) forms.clone();
+			return new ArrayList<String>(forms.keySet());
 		}
 		
 		/**
@@ -187,6 +233,11 @@ public class Dictionary {
 			return header;
 		}
 		
+		public ArrayList<String> getParts(String form){
+			return (ArrayList<String>) forms.get(form).clone();
+		}
+		
+		
 		@Override public String toString(){
 			StringBuilder sb = new StringBuilder(String.format("Header: %s\nGloss: ", header));
 			for(String gloss : glosses){
@@ -194,7 +245,7 @@ public class Dictionary {
 				sb.append("; ");
 			}
 			sb.append("\nForms:");
-			for(String form : forms){
+			for(String form : formList){
 				sb.append(form + "; ");
 			}
 			
