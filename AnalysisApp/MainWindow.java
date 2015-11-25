@@ -191,7 +191,7 @@ public class MainWindow {
 					else{
 
 
-						HashMap<String, Double> results = null;
+						HashMap<String, Integer> results = null;
 						position = (String) comboBox.getSelectedItem();
 						try {
 							results = Search.search(lemma, position, dict);
@@ -202,24 +202,30 @@ public class MainWindow {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
+						
+						int total = results.get("TERM_TOTAL");
 						model = new DefaultTableModel();
 						model.addColumn("Appearing with search term");
 						model.addColumn("Gloss (meaning)");
 						model.addColumn("Frequency");
+						DecimalFormat format = new DecimalFormat("##.#");
 						for (String key : results.keySet()) {
-							String gloss = "";
-							if(dict.getLemmaList().contains(key)) {
-								ArrayList<String> glosses = dict.getGlossList(key);
-								for(int i = 1; i < glosses.size(); i++) {
-									if(i!=1) {
-										gloss = gloss + ", ";
+							if(!key.equals("TERM_TOTAL")){
+								String gloss = "";
+								if(dict.getLemmaList().contains(key)) {
+									ArrayList<String> glosses = dict.getGlossList(key);
+									for(int i = 1; i < glosses.size(); i++) {
+										if(i!=1) {
+											gloss = gloss + ", ";
+										}
+										gloss = gloss + glosses.get(i);
 									}
-									gloss = gloss + glosses.get(i);
 								}
+								NumberFormat defaultFormat = NumberFormat.getPercentInstance();
+								double freq = (results.get(key)/(double) total)*100;
+								String[] arr = {key, gloss, format.format(freq)};
+								model.addRow(arr);
 							}
-							NumberFormat defaultFormat = NumberFormat.getPercentInstance();
-							String[] arr = {key, gloss, new DecimalFormat("##.#").format(results.get(key)*100)};
-							model.addRow(arr);
 						}
 						String gloss = "";
 						ArrayList<String> glosses = dict.getGlossList(lemma);
@@ -230,7 +236,7 @@ public class MainWindow {
 							gloss = gloss + glosses.get(i);
 						}
 
-						lbl_1.setText("Found the lemma \""+lemma+"\" (" + gloss + ") " + results.keySet().size()+" times.");
+						lbl_1.setText("Found the lemma \""+lemma+"\" (" + gloss + ") " + total +" times.");
 						table.setModel(model);
 						DefaultRowSorter sorter = new TableRowSorter(model);
 						table.setRowSorter(sorter);
