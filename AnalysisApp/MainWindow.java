@@ -7,12 +7,17 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Properties;
+
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.DefaultRowSorter;
@@ -48,19 +53,36 @@ public class MainWindow {
 	private Corpus corpus;
 	private String lemma;
 	private String position;
-	private JLabel lbl_1;
+	private JLabel topLabel;
+	private Properties settings;
 
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					MainWindow window = new MainWindow();
+					Properties settings = new Properties();
+					File settingsFile = new File("settings.properties");
+					MainWindow window = new MainWindow(settings);
+					if(settingsFile.exists()){
+						FileReader reader = new FileReader(settingsFile);
+						settings.load(reader);
+						String dictLocation = settings.getProperty("dictionary");
+						String corpusLocation = settings.getProperty("corpus");
+						if(!dictLocation.equals(null)){
+							window.newDict(dictLocation);
+						}
+						if(!corpusLocation.equals(null)){
+							window.newCorpus(corpusLocation);
+						}
+					}
 					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 				}
 			}
 		});
@@ -70,7 +92,8 @@ public class MainWindow {
 	 * Create the application.
 	 * @throws IOException 
 	 */
-	public MainWindow() throws IOException {
+	public MainWindow(Properties settings) throws IOException {
+		this.settings = settings;
 		initialize();
 	}
 
@@ -137,7 +160,9 @@ public class MainWindow {
 		textField = new JTextField();
 		panel_3.add(textField);
 		textField.setHorizontalAlignment(SwingConstants.CENTER);
-		textField.setColumns(10);
+		textField.setColumns(22);
+		textField.setEnabled(false);
+		textField.setText("No Dictionary Loaded");
 
 		list = new JList();
 
@@ -247,7 +272,7 @@ public class MainWindow {
 							gloss = gloss + glosses.get(i);
 						}
 
-						lbl_1.setText("Found the lemma \""+lemma+"\" (" + gloss + ") " + total +" times.");
+						topLabel.setText("Found the lemma \""+lemma+"\" (" + gloss + ") " + total +" times.");
 						table.setModel(model);
 						DefaultRowSorter sorter = new TableRowSorter(model);
 						table.setRowSorter(sorter);
@@ -340,7 +365,7 @@ public class MainWindow {
 					gloss = gloss + glosses.get(i);
 				}
 
-				lbl_1.setText("Found the lemma \""+lemma+"\" (" + gloss + ") " + results.keySet().size()+" times with " + numBtwn +" words inbetween.");
+				topLabel.setText("Found the lemma \""+lemma+"\" (" + gloss + ") " + results.keySet().size()+" times with " + numBtwn +" words inbetween.");
 				table.setModel(model);
 				DefaultRowSorter sorter = new TableRowSorter(model);
 				table.setRowSorter(sorter);
@@ -353,14 +378,24 @@ public class MainWindow {
 		//JButton btnNewButton_1 = new JButton("Add to Dictionary");
 		//panel_5.add(btnNewButton_1);
 
-		lbl_1 = new JLabel();
-		panel_2.add(lbl_1, BorderLayout.NORTH);
+		topLabel = new JLabel();
+		topLabel.setText("No Corpus Loaded");
+		panel_2.add(topLabel, BorderLayout.NORTH);
 
 	}
 
 	public void newCorpus(String filename){
 		corpus = new Corpus(filename);
 		new Search(corpus);
+		if(corpus.getFiles().isEmpty()){
+			JOptionPane.showMessageDialog(frame,
+					"No Readable Transcriptions Found.", "No Transcriptions", JOptionPane.ERROR_MESSAGE);
+		}
+		else{
+			topLabel.setText("Transcriptions Loaded");
+			settings.setProperty("corpus", filename);
+			saveSettings();
+		}
 	}
 
 	public void newDict(String filename){
@@ -373,11 +408,28 @@ public class MainWindow {
 			}
 
 			list.setModel(lemmaList);
+			textField.setEnabled(true);
+			textField.setText("");
+			settings.setProperty("dictionary", filename);
+			saveSettings();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
+	}
+	
+	public void saveSettings(){
+		File settingsFile = new File("settings.properties");
+		try{
+			FileWriter writer = new FileWriter(settingsFile);
+			settings.store(writer, null);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 	}
 
 }
