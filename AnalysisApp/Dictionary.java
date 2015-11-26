@@ -11,7 +11,7 @@ public class Dictionary {
 	private HashMap<String, Lemma> lemmaMap;
 	private ArrayList<String> lemmas;  
 	private HashMap<String, ArrayList<String>> formMap; //forms -> list of associated lemmas
-	
+	private ArrayList<String> allParts;
 	/**
 	 * @throws IOException
 	 */
@@ -39,6 +39,7 @@ public class Dictionary {
 		Lemma currentLemma = null;
 		String part = "Unknown";
 		ArrayList<String> newForms = new ArrayList<String>();
+		allParts = new ArrayList<String>();
 		
 		while(line != null){
 			if(line.startsWith("\\lx ")){
@@ -86,6 +87,9 @@ public class Dictionary {
 			}
 			else if(line.startsWith("\\catgr ")){
 				part = line.substring(7);
+				if(!allParts.contains(part)){
+					allParts.add(part);
+				}
 			}
 			
 			line = bReader.readLine();
@@ -163,6 +167,10 @@ public class Dictionary {
 			result.addAll(getParts(term, lemmaString));
 		}
 		return result;
+	}
+	
+	public ArrayList<String> getAllParts(){
+		return (ArrayList<String>) allParts.clone();
 	}
 	
 	/**
