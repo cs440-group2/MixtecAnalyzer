@@ -30,6 +30,7 @@ public class FilterDialog extends JDialog implements ActionListener {
 	public FilterDialog(JFrame frame, ArrayList<String> parts){
 		super(frame, "Filter Options");
 		setModalityType(ModalityType.DOCUMENT_MODAL);
+		setLocationRelativeTo(frame);
 		Container pane = getContentPane();
 		
 		JPanel lPanel = new JPanel();
@@ -82,7 +83,6 @@ public class FilterDialog extends JDialog implements ActionListener {
 			results = list.getSelectedValuesList();
 		}
 		setVisible(false);
-
 	}
 
 }

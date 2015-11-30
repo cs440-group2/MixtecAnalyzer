@@ -40,6 +40,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
@@ -289,6 +290,10 @@ public class MainWindow {
 					table.setModel(model);
 					DefaultRowSorter sorter = new TableRowSorter(model);
 					table.setRowSorter(sorter);
+					
+					DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+					rightRenderer.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
+					table.getColumn("Frequency (%)").setCellRenderer( rightRenderer );
 				}
 			}
 
@@ -511,6 +516,10 @@ public void filterOptions(){
 		filteredModel.fireTableStructureChanged();
 		table.setRowSorter(new TableRowSorter(filteredModel));
 	}
+	
+	DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+	rightRenderer.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
+	table.getColumn("Frequency (%)").setCellRenderer( rightRenderer );
 
 }
 
