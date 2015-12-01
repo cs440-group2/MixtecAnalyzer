@@ -34,7 +34,7 @@ public class FilterDialog extends JDialog implements ActionListener {
 		Container pane = getContentPane();
 		
 		JPanel lPanel = new JPanel();
-		JLabel label = new JLabel("Select Parts of Speech to Include");
+		JLabel label = new JLabel("Select Parts of Speech to Include (ctrl or shift click to select multiples)");
 		lPanel.add(label);
 		pane.add(lPanel, BorderLayout.NORTH);
 		

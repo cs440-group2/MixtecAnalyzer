@@ -120,7 +120,7 @@ public class MainWindow {
 		JMenu mnNewMenu = new JMenu("File");
 		menuBar.add(mnNewMenu);
 
-		JMenuItem mntmFile = new JMenuItem("Load Transriptions");
+		JMenuItem mntmFile = new JMenuItem("Load Transcriptions");
 		mntmFile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser chooser = new JFileChooser();
