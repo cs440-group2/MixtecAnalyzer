@@ -46,7 +46,7 @@ public class AdvancedSearch {
 			}
 		}
 		if (position == "both"){
-			HashMap<String, Double> pre = advancedSearch(lemma, numBtwn, "preeceeding", dict);
+			HashMap<String, Double> pre = advancedSearch(lemma, numBtwn, "preceding", dict);
 			HashMap<String, Double> post = advancedSearch(lemma, numBtwn, "following", dict);
 			for (String key : post.keySet()){
 				if (!pre.containsKey(key)){
