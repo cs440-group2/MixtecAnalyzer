@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
@@ -180,8 +181,6 @@ public class MainWindow {
 		JScrollPane listScroll = new JScrollPane(list);
 		panel_1.add(listScroll, BorderLayout.CENTER);
 
-		//newDict();
-
 		JPanel panel_4 = new JPanel();
 		panel_1.add(panel_4, BorderLayout.SOUTH);
 		panel_4.setLayout(new BorderLayout(0, 0));
@@ -219,12 +218,16 @@ public class MainWindow {
 						lemma = textField.getText();
 					}
 
+					ArrayList<String> forms = dict.getFormList(lemma);
+					forms.remove(lemma);
+					List<String> otherForms = null;
+					if(!forms.isEmpty()) {
+						otherForms = FormsDialog.showDialog(frame, forms);
+					}
 
-
-					
 					position = (String) comboBox.getSelectedItem();
 					try {
-						results = Search.search(lemma, position, dict);
+						results = Search.search(lemma, position, dict, otherForms);
 					} catch (FileNotFoundException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -250,7 +253,7 @@ public class MainWindow {
 					model.addColumn("Frequency (%)");
 					model.addColumn("Parts of Speech");
 
-					DecimalFormat format = new DecimalFormat("##.#");
+					DecimalFormat format = new DecimalFormat("##.###");
 					for (String key : results.keySet()) {
 						if(!key.equals("TERM_TOTAL")){
 							String gloss = "";
@@ -285,12 +288,21 @@ public class MainWindow {
 						}
 						gloss = gloss + glosses.get(i);
 					}
+					if(gloss.equals(""))
+					{
 
-					topLabel.setText("Found the lemma \""+lemma+"\" (" + gloss + ") " + total +" times.");
+						topLabel.setText("Found the lemma \""+lemma+"\" " + total +" times.");
+
+					}
+					else {
+
+						topLabel.setText("Found the lemma \""+lemma+"\" (" + gloss + ") " + total +" times.");
+
+					}
 					table.setModel(model);
 					DefaultRowSorter sorter = new TableRowSorter(model);
 					table.setRowSorter(sorter);
-					
+
 					DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
 					rightRenderer.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
 					table.getColumn("Frequency (%)").setCellRenderer( rightRenderer );
@@ -419,109 +431,107 @@ public class MainWindow {
 
 
 
-}
-
-public void newCorpus(String filename){
-	corpus = new Corpus(filename);
-	new Search(corpus);
-	if(corpus.getFiles().isEmpty()){
-		JOptionPane.showMessageDialog(frame,
-				"No Readable Transcriptions Found.", "No Transcriptions", JOptionPane.ERROR_MESSAGE);
 	}
-	else{
-		topLabel.setText("Transcriptions Loaded");
-		settings.setProperty("corpus", filename);
-		saveSettings();
-	}
-}
 
-public void newDict(String filename){
-	try {
-		dict = new Dictionary(filename);
-		lemmaList = new DefaultListModel();
-		lemmas = dict.getLemmaList();
-		for(int i = 0; i < lemmas.size(); i++){
-			lemmaList.addElement(lemmas.get(i));
+	public void newCorpus(String filename){
+		corpus = new Corpus(filename);
+		new Search(corpus);
+		if(corpus.getFiles().isEmpty()){
+			JOptionPane.showMessageDialog(frame,
+					"No Readable Transcriptions Found.", "No Transcriptions", JOptionPane.ERROR_MESSAGE);
+		}
+		else{
+			topLabel.setText("Transcriptions Loaded");
+			settings.setProperty("corpus", filename);
+			saveSettings();
+		}
+	}
+
+	public void newDict(String filename){
+		try {
+			dict = new Dictionary(filename);
+			lemmaList = new DefaultListModel();
+			lemmas = dict.getLemmaList();
+			for(int i = 0; i < lemmas.size(); i++){
+				lemmaList.addElement(lemmas.get(i));
+			}
+
+			list.setModel(lemmaList);
+			textField.setEnabled(true);
+			textField.setText("");
+			settings.setProperty("dictionary", filename);
+			saveSettings();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
-		list.setModel(lemmaList);
-		textField.setEnabled(true);
-		textField.setText("");
-		settings.setProperty("dictionary", filename);
-		saveSettings();
-	} catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-
-}
-
-
-public void saveSettings(){
-	File settingsFile = new File("settings.properties");
-	try{
-		FileWriter writer = new FileWriter(settingsFile);
-		settings.store(writer, null);
-	} catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
 	}
 
 
-}
-
-public void filterOptions(){
-	List<String> filterList = FilterDialog.showDialog(frame, dict.getAllParts());
-	if(filterList.isEmpty()){
-		table.setModel(model);
-		model.fireTableStructureChanged();
-		table.setRowSorter(new TableRowSorter(model));
-	}
-	else{
-		DefaultTableModel filteredModel = new DefaultTableModel(){
-			@Override
-			public Class getColumnClass(int column){
-				if(column == 2){
-					return Double.class;
-				}
-				else{
-					return String.class;
-				}
-			}
-		};
-		for(int col = 0; col < model.getColumnCount(); col++){
-			filteredModel.addColumn(model.getColumnName(col));
+	public void saveSettings(){
+		File settingsFile = new File("settings.properties");
+		try{
+			FileWriter writer = new FileWriter(settingsFile);
+			settings.store(writer, null);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		for(int row = 0; row < model.getRowCount(); row++){
-			String resultParts = (String) model.getValueAt(row, 3);
-			boolean include = false;
-			for(String part:filterList){
-				Pattern p = Pattern.compile("(^|\\s)" + part + "(,|$)");
-				Matcher m = p.matcher(resultParts);
-				if(m.find()){
-					include = true;
-				}
-			}
-			if(include){
-				Object[] rowData = new Object[model.getColumnCount()];
-				for(int col = 0; col < model.getColumnCount(); col++){
-					//System.out.printf("%d, %d\n", col, row);
-					rowData[col] = model.getValueAt(row, col);
-				}
-				filteredModel.addRow(rowData);
-			}
-		}
-		
-		table.setModel(filteredModel);
-		filteredModel.fireTableStructureChanged();
-		table.setRowSorter(new TableRowSorter(filteredModel));
+
+
 	}
-	
-	DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
-	rightRenderer.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
-	table.getColumn("Frequency (%)").setCellRenderer( rightRenderer );
 
-}
+	public void filterOptions(){
+		List<String> filterList = FilterDialog.showDialog(frame, dict.getAllParts());
+		if(filterList.isEmpty()){
+			table.setModel(model);
+			model.fireTableStructureChanged();
+			table.setRowSorter(new TableRowSorter(model));
+		}
+		else{
+			DefaultTableModel filteredModel = new DefaultTableModel(){
+				@Override
+				public Class getColumnClass(int column){
+					if(column == 2){
+						return Double.class;
+					}
+					else{
+						return String.class;
+					}
+				}
+			};
+			for(int col = 0; col < model.getColumnCount(); col++){
+				filteredModel.addColumn(model.getColumnName(col));
+			}
+			for(int row = 0; row < model.getRowCount(); row++){
+				String resultParts = (String) model.getValueAt(row, 3);
+				boolean include = false;
+				for(String part:filterList){
+					Pattern p = Pattern.compile("(^|\\s)" + part + "(,|$)");
+					Matcher m = p.matcher(resultParts);
+					if(m.find()){
+						include = true;
+					}
+				}
+				if(include){
+					Object[] rowData = new Object[model.getColumnCount()];
+					for(int col = 0; col < model.getColumnCount(); col++){
+						rowData[col] = model.getValueAt(row, col);
+					}
+					filteredModel.addRow(rowData);
+				}
+			}
 
+			table.setModel(filteredModel);
+			filteredModel.fireTableStructureChanged();
+			table.setRowSorter(new TableRowSorter(filteredModel));
+		}
+
+		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+		rightRenderer.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
+		table.getColumn("Frequency (%)").setCellRenderer( rightRenderer );
+
+	}
 
 }

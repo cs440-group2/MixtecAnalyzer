@@ -15,8 +15,8 @@ public class Search {
 	 * @return
 	 * @throws IOException 
 	 */
-	public static HashMap<String, Integer> search(String lemma, String position, Dictionary dict) throws IOException{
-		
+	public static HashMap<String, Integer> search(String lemma, String position, Dictionary dict, List<String> otherForms) throws IOException{
+
 		if (position == "preceding"){
 			HashMap<String, Integer> map = new HashMap<String, Integer>();
 			for (String file : corpus.getCorpus()){
@@ -27,6 +27,19 @@ public class Search {
 					}
 					else{
 						map.put(key, curr.get(key)+map.get(key));
+					}
+				}
+				if(otherForms != null) {
+					for(String form : otherForms) {
+						curr = preSearch(form, dict, file);
+						for (String key : curr.keySet()){
+							if (!map.containsKey(key)){
+								map.put(key, curr.get(key));
+							}
+							else{
+								map.put(key, curr.get(key)+map.get(key));
+							}
+						}
 					}
 				}
 			}
@@ -44,12 +57,26 @@ public class Search {
 						map.put(key, curr.get(key)+map.get(key));
 					}
 				}
+				if(otherForms != null) {
+					for(String form : otherForms) {
+						curr = postSearch(form, dict, file);
+						for (String key : curr.keySet()){
+							if (!map.containsKey(key)){
+								map.put(key, curr.get(key));
+							}
+							else{
+								map.put(key, curr.get(key)+map.get(key));
+							}
+						}
+					}
+				}
 			}
 			return map;
 		}
 		if (position == "both"){
-			HashMap<String, Integer> pre = search(lemma, "preceding", dict);
-			HashMap<String, Integer> post = search(lemma, "following", dict);
+			HashMap<String, Integer> pre = search(lemma, "preceding", dict, otherForms);
+			HashMap<String, Integer> post = search(lemma, "following", dict, otherForms);
+			int total = pre.get("TERM_TOTAL") + post.get("TERM_TOTAL");
 			for (String key : post.keySet()){
 				if (!pre.containsKey(key)){
 					pre.put(key, post.get(key));
@@ -58,6 +85,7 @@ public class Search {
 					pre.put(key, post.get(key)+pre.get(key));
 				}
 			}
+			pre.put("TERM_TOTAL", total);
 			return pre;
 		}
 		else{
@@ -89,7 +117,7 @@ public class Search {
 		Matcher m2 = p2.matcher(file);
 
 		HashMap<String, Integer> frequency = new HashMap<String, Integer>();
-		
+
 		while (m1.find()) {
 			if (m2.find(m1.end())){
 				total++;
