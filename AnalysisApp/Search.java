@@ -110,8 +110,8 @@ public class Search {
 		for (String form: dictionary.getFormList(lemma)){
 			search = search + "|" + form;
 		}
-		Pattern p1 = Pattern.compile("("+search+")" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
-		Pattern p2 = Pattern.compile("[\\w|-]+" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
+		Pattern p1 = Pattern.compile("\\b" + "("+search+")" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
+		Pattern p2 = Pattern.compile("\\b" + "[\\w|\\-|\\*]+" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
 
 		Matcher m1 = p1.matcher(file);
 		Matcher m2 = p2.matcher(file);
@@ -170,8 +170,8 @@ public class Search {
 			search = search + "|" + form;
 		}
 
-		Pattern p1 = Pattern.compile("(" +search+")" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
-		Pattern p2 = Pattern.compile("[\\w|-]+" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
+		Pattern p1 = Pattern.compile("\\b" + "(" +search+")" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
+		Pattern p2 = Pattern.compile("\\b" + "[\\w|\\-|\\*|\uFFFD]+" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
 
 		Matcher m1 = p2.matcher(file);
 		Matcher m2 = p2.matcher(file);
