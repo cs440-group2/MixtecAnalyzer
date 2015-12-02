@@ -16,7 +16,7 @@ public class Dictionary {
 	 * @throws IOException
 	 */
 	public Dictionary() throws IOException{ //TODO: Remove
-		this("C:\\Users\\Ian\\Desktop\\New folder\\mixtec_maestro_unicode_2015-08-25.txt");
+		this("/Users/Rebecca/Desktop/mixtec_maestro_unicode_2015-08-25.txt");
 	}
 	
 	/**

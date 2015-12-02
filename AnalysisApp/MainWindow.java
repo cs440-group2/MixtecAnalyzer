@@ -1,6 +1,7 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -61,6 +62,7 @@ public class MainWindow {
 	private JLabel topLabel;
 	private Properties settings;
 	private HashMap<String, Integer> results;
+	private String result;
 
 	/**
 	 * Launch the application.
@@ -375,8 +377,18 @@ public class MainWindow {
 				}
 
 				HashMap<String, Double> results = null;
+				int row = table.getSelectedRow();
+				result = (String) table.getValueAt(row, 0);
+
 				try {
-					results = AdvancedSearch.advancedSearch(lemma, numBtwn, position, dict);
+					results = AdvancedSearch.advancedSearch(lemma, result, numBtwn, position, dict);
+					for (String key : results.keySet()){
+						if (!key.equals("TERM_TOTAL")){
+							Double freq = results.get(key)/results.get("TERM_TOTAL");
+							results.put(key, freq);
+						}
+					}
+					results.remove("TERM_TOTAL");
 				} catch (FileNotFoundException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();

@@ -111,7 +111,7 @@ public class Search {
 			search = search + "|" + form;
 		}
 		Pattern p1 = Pattern.compile("\\b" + "("+search+")" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
-		Pattern p2 = Pattern.compile("\\b" + "[\\w|\\-|\\*]+" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
+		Pattern p2 = Pattern.compile("\\b" + "[^\\s|^\\,|^\\...]" + "(\\=|\\b)" + "[^\\s]*" + "(\\=|\\b)" + "[^\\s]*");
 
 		Matcher m1 = p1.matcher(file);
 		Matcher m2 = p2.matcher(file);
@@ -170,8 +170,8 @@ public class Search {
 			search = search + "|" + form;
 		}
 
-		Pattern p1 = Pattern.compile("\\b" + "(" +search+")" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
-		Pattern p2 = Pattern.compile("\\b" + "[\\w|\\-|\\*|\uFFFD]+" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
+		Pattern p1 = Pattern.compile("\\b" + "(" +search+")" + "(\\=|\\b)" + "[\\w\\(\\)]*" + "(\\=|\\b)*" + "[\\w\\(\\)]*");
+		Pattern p2 = Pattern.compile("\\b" + "[^\\s|^\\,|^\\...]+" + "(\\=|\\b)" + "[^\\s]*" + "(\\=|\\b)" + "[^\\s]*");
 
 		Matcher m1 = p2.matcher(file);
 		Matcher m2 = p2.matcher(file);
@@ -182,6 +182,9 @@ public class Search {
 				String match = m2.group();
 				Matcher m3 = p1.matcher(match);
 				if (m3.find()){
+					if (m1.group().equals("2")){
+						System.out.println(file);
+					}
 					total++;
 					ArrayList<String> headers = dictionary.findHeaders(m1.group());
 					if (!headers.isEmpty()){
