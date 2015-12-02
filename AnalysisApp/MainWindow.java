@@ -199,6 +199,84 @@ public class MainWindow {
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		panel_4.add(lblNewLabel, BorderLayout.NORTH);
 
+		
+		JButton filterBtn = new JButton();
+		filterBtn.setEnabled(false);                  
+		filterBtn.setText("Filter Results");
+		
+		filterBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e){
+				filterOptions();
+			}
+		});
+
+		JButton btnNewButton = new JButton("Advanced Search");
+		btnNewButton.setEnabled(false);							
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Object[] possibilities = {"0","1", "2", "3", "4"};
+				String s = (String)JOptionPane.showInputDialog(
+						frame,
+						"Select how many words you want inbetween:\n",
+						"Advanced Search",
+						JOptionPane.PLAIN_MESSAGE,
+						null,
+						possibilities,
+						"0");
+
+				int numBtwn;
+				try{
+					numBtwn = Integer.parseInt(s);
+
+				}catch(Exception ex){
+					return;
+				}
+
+				HashMap<String, Double> results = null;
+				try {
+					results = AdvancedSearch.advancedSearch(lemma, numBtwn, position, dict);
+				} catch (FileNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				model = new DefaultTableModel();
+				model.addColumn("Appearing with search term");
+				model.addColumn("Gloss (meaning)");
+				model.addColumn("Frequency");
+				for (String key : results.keySet()) {
+					String gloss = "";
+					if(dict.getLemmaList().contains(key)) {
+						ArrayList<String> glosses = dict.getGlossList(key);
+						for(int i = 1; i < glosses.size(); i++) {
+							if(i!=1) {
+								gloss = gloss + ", ";
+							}
+							gloss = gloss + glosses.get(i);
+						}
+					}
+					NumberFormat defaultFormat = NumberFormat.getPercentInstance();
+					String[] arr = {key, gloss, new DecimalFormat("##.#").format(results.get(key)*100)};
+					model.addRow(arr);
+				}
+				String gloss = "";
+				ArrayList<String> glosses = dict.getGlossList(lemma);
+				for(int i = 1; i < glosses.size(); i++) {
+					if(i!=1) {
+						gloss = gloss + ", ";
+					}
+					gloss = gloss + glosses.get(i);
+				}
+
+				topLabel.setText("Found the lemma \""+lemma+"\" (" + gloss + ") " + results.keySet().size()+" times with " + numBtwn +" words inbetween.");
+				table.setModel(model);
+				DefaultRowSorter sorter = new TableRowSorter(model);
+				table.setRowSorter(sorter);
+			}
+		});
+
 		btnSearch.addActionListener(new ActionListener() {//search button action
 			public void actionPerformed(ActionEvent e) {
 				if(dict == null) {
@@ -307,6 +385,9 @@ public class MainWindow {
 					rightRenderer.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
 					table.getColumn("Frequency (%)").setCellRenderer( rightRenderer );
 				}
+			
+				btnNewButton.setEnabled(true);	
+				filterBtn.setEnabled(true); 
 			}
 
 		});
@@ -344,82 +425,9 @@ public class MainWindow {
 		panel_2.add(panel_5, BorderLayout.SOUTH);
 
 
-		JButton filterBtn = new JButton();
-		filterBtn.setText("Filter Results");
-		panel_5.add(filterBtn);
-		filterBtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e){
-				filterOptions();
-			}
-		});
-
-		JButton btnNewButton = new JButton("Advanced Search");
-		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Object[] possibilities = {"0","1", "2", "3", "4"};
-				String s = (String)JOptionPane.showInputDialog(
-						frame,
-						"Select how many words you want inbetween:\n",
-						"Advanced Search",
-						JOptionPane.PLAIN_MESSAGE,
-						null,
-						possibilities,
-						"0");
-
-				int numBtwn;
-				try{
-					numBtwn = Integer.parseInt(s);
-
-				}catch(Exception ex){
-					return;
-				}
-
-				HashMap<String, Double> results = null;
-				try {
-					results = AdvancedSearch.advancedSearch(lemma, numBtwn, position, dict);
-				} catch (FileNotFoundException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				model = new DefaultTableModel();
-				model.addColumn("Appearing with search term");
-				model.addColumn("Gloss (meaning)");
-				model.addColumn("Frequency");
-				for (String key : results.keySet()) {
-					String gloss = "";
-					if(dict.getLemmaList().contains(key)) {
-						ArrayList<String> glosses = dict.getGlossList(key);
-						for(int i = 1; i < glosses.size(); i++) {
-							if(i!=1) {
-								gloss = gloss + ", ";
-							}
-							gloss = gloss + glosses.get(i);
-						}
-					}
-					NumberFormat defaultFormat = NumberFormat.getPercentInstance();
-					String[] arr = {key, gloss, new DecimalFormat("##.#").format(results.get(key)*100)};
-					model.addRow(arr);
-				}
-				String gloss = "";
-				ArrayList<String> glosses = dict.getGlossList(lemma);
-				for(int i = 1; i < glosses.size(); i++) {
-					if(i!=1) {
-						gloss = gloss + ", ";
-					}
-					gloss = gloss + glosses.get(i);
-				}
-
-				topLabel.setText("Found the lemma \""+lemma+"\" (" + gloss + ") " + results.keySet().size()+" times with " + numBtwn +" words inbetween.");
-				table.setModel(model);
-				DefaultRowSorter sorter = new TableRowSorter(model);
-				table.setRowSorter(sorter);
-			}
-		});
-
+	
 		panel_5.add(btnNewButton);
+		panel_5.add(filterBtn);
 
 		//TODO: Add to dictionary button
 		//JButton btnNewButton_1 = new JButton("Add to Dictionary");
