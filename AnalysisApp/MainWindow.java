@@ -206,7 +206,12 @@ public class MainWindow {
 		
 		filterBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e){
-				filterOptions();
+				try{
+					filterOptions();
+				}catch(Exception ex){
+					
+				}
+			
 			}
 		});
 

@@ -120,7 +120,8 @@ public class Corpus {
 		
 		ArrayList<String> corpus = testCorpus.getCorpus();
 
-		System.out.println(corpus.size());
+//		System.out.println(corpus.size());
+//		System.out.println(corpus);
 
 	}
 }
