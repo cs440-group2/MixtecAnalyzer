@@ -17,7 +17,7 @@ public class Search {
 	 */
 	public static HashMap<String, Integer> search(String lemma, String position, Dictionary dict, List<String> otherForms) throws IOException{
 
-		if (position == "preceding"){
+		if (position.equals("preceding")){
 			HashMap<String, Integer> map = new HashMap<String, Integer>();
 			for (String file : corpus.getCorpus()){
 				HashMap<String, Integer> curr = preSearch(lemma, dict, file);
@@ -45,7 +45,7 @@ public class Search {
 			}
 			return map;
 		}
-		if (position == "following"){
+		if (position.equals("following")){
 			HashMap<String, Integer> map = new HashMap<String, Integer>();
 			for (String file : corpus.getCorpus()){
 				HashMap<String, Integer> curr = postSearch(lemma, dict, file);
@@ -73,7 +73,7 @@ public class Search {
 			}
 			return map;
 		}
-		if (position == "both"){
+		if (position.equals("both")){
 			HashMap<String, Integer> pre = search(lemma, "preceding", dict, otherForms);
 			HashMap<String, Integer> post = search(lemma, "following", dict, otherForms);
 			int total = pre.get("TERM_TOTAL") + post.get("TERM_TOTAL");
