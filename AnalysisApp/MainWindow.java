@@ -13,6 +13,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -40,6 +41,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -129,7 +131,12 @@ public class MainWindow {
 				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 				int returnVal = chooser.showOpenDialog(frame);
 				if(returnVal == JFileChooser.APPROVE_OPTION) {
-					newCorpus(chooser.getSelectedFile().getAbsolutePath());
+					try {
+						newCorpus(chooser.getSelectedFile().getAbsolutePath());
+					} catch (UnsupportedEncodingException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				}
 			}
 		});
@@ -445,7 +452,7 @@ public class MainWindow {
 
 	}
 
-	public void newCorpus(String filename){
+	public void newCorpus(String filename) throws UnsupportedEncodingException{
 		corpus = new Corpus(filename);
 		new Search(corpus);
 		if(corpus.getFiles().isEmpty()){

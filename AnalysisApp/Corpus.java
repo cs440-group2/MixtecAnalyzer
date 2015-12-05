@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
@@ -22,8 +23,9 @@ public class Corpus {
 	/**
 	 * Corpus constructor
 	 * @param directoryName - Absolute path to directory of transcription files
+	 * @throws UnsupportedEncodingException 
 	 */
-	public Corpus(String directoryName) {
+	public Corpus(String directoryName) throws UnsupportedEncodingException {
 		this.directoryName = directoryName;
 		corpus = new ArrayList<String>();
 		transFiles = new ArrayList<File>();
@@ -57,13 +59,13 @@ public class Corpus {
 	/**
 	 * Concatenates file contents into string, and adds strings to corpus ArrayList
 	 * @param files
+	 * @throws UnsupportedEncodingException 
 	 */
-	public void showFiles(ArrayList<File> files) {
+	public void showFiles(ArrayList<File> files) throws UnsupportedEncodingException {
 		for (File file : files) {
 
 			try {
-				FileInputStream input = new FileInputStream(file);
-				BufferedReader br = new BufferedReader(new InputStreamReader(input));
+				BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "ISO-8859-1"));
 
 				String line;
 				String str = "";
@@ -73,7 +75,7 @@ public class Corpus {
 					while((line = br.readLine())  != null){
 
 						if(line.startsWith("</Turn")){
-							corpus.add(str);
+							corpus.add(str.toLowerCase());
 							str = "";
 						}
 						else if(!line.startsWith("<")){
@@ -106,7 +108,7 @@ public class Corpus {
 	}
 	
 	//test
-	public static void main(String[] args) {
+	public static void main(String[] args) throws UnsupportedEncodingException {
 		
 		JFileChooser chooser = new JFileChooser();
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -120,7 +122,7 @@ public class Corpus {
 		
 		ArrayList<String> corpus = testCorpus.getCorpus();
 
-		System.out.println(corpus.size());
+		System.out.println(testCorpus.getFiles());
 
 	}
 }
