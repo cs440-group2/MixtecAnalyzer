@@ -61,10 +61,8 @@ public class Corpus {
 	 */
 	public void showFiles(ArrayList<File> files) {
 		for (File file : files) {
-
 			try {
-				FileInputStream input = new FileInputStream(file);
-				BufferedReader br = new BufferedReader(new InputStreamReader(input));
+				BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "ISO-8859-1"));
 
 				String line;
 				String str = "";
@@ -89,6 +87,9 @@ public class Corpus {
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} catch (UnsupportedEncodingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
 		}
 	}
