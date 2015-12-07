@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
@@ -33,7 +34,7 @@ public class Corpus {
 	}
 
 	/**
-	 * Updates files to include all files in the directory and sub directories with .trs extension
+	 * Updates files to include all files in the directory and sub directories with .trs and .eaf extension
 	 * @param directoryName
 	 * @param files
 	 */
@@ -43,7 +44,7 @@ public class Corpus {
 
 		for(File file: fList){
 			if(file.isFile()){
-				if(file.getName().endsWith(".trs")){
+				if(file.getName().endsWith(".trs") || file.getName().endsWith(".eaf")){
 					files.add(file);
 				}
 			}
@@ -89,7 +90,6 @@ public class Corpus {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
 		}
 	}
 	
