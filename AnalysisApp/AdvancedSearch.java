@@ -15,7 +15,7 @@ public class AdvancedSearch {
 	 */
 	public static HashMap<String, Double> advancedSearch(String lemma, int numBtwn, String position, Dictionary dict) throws FileNotFoundException {
 		Corpus corpus = Search.corpus;
-		if (position == "preceding"){
+		if (position.equals("preceding")){
 			HashMap<String, Double> map = new HashMap<String, Double>();
 			for (String file : corpus.getCorpus()){
 				HashMap<String, Double> curr = preAdvancedSearch(lemma, numBtwn, dict, file);
@@ -30,7 +30,7 @@ public class AdvancedSearch {
 				return map;
 			}
 		}
-		if (position == "following"){
+		if (position.equals("following")){
 			HashMap<String, Double> map = new HashMap<String, Double>();
 			for (String file : corpus.getCorpus()){
 				HashMap<String, Double> curr = postAdvancedSearch(lemma, numBtwn, dict, file);
@@ -45,7 +45,7 @@ public class AdvancedSearch {
 				return map;
 			}
 		}
-		if (position == "both"){
+		if (position.equals("both")){
 			HashMap<String, Double> pre = advancedSearch(lemma, numBtwn, "preceding", dict);
 			HashMap<String, Double> post = advancedSearch(lemma, numBtwn, "following", dict);
 			for (String key : post.keySet()){

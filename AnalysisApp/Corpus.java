@@ -5,8 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.swing.JFileChooser;
 
@@ -87,7 +85,6 @@ public class Corpus {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -124,7 +121,6 @@ public class Corpus {
 		ArrayList<String> corpus = testCorpus.getCorpus();
 
 		System.out.println(corpus.size());
-		System.out.println(corpus);
 
 	}
 }
