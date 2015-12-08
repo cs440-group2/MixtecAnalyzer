@@ -100,7 +100,7 @@ public class Search {
 	 * @throws FileNotFoundException
 	 */
 	public static HashMap<String, Integer> postSearch(String lemma, Dictionary dictionary, String file) throws FileNotFoundException {
-
+ 
 		int total = 0;
 
 		char last = lemma.charAt(lemma.length()-1);
