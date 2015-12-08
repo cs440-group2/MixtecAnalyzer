@@ -14,3 +14,5 @@ hs_err_pid*
 
 # mac os
 .DS_Store
+
+.properties
