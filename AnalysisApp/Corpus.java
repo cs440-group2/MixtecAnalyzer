@@ -65,7 +65,7 @@ public class Corpus {
 		for (File file : files) {
 
 			try {
-				BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "ISO-8859-1"));
+				BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF8"));
 
 				String line;
 				String str = "";
@@ -75,7 +75,7 @@ public class Corpus {
 					while((line = br.readLine())  != null){
 
 						if(line.startsWith("</Turn")){
-							corpus.add(str.toLowerCase());
+							corpus.add(str);
 							str = "";
 						}
 						else if(!line.startsWith("<")){
@@ -122,7 +122,7 @@ public class Corpus {
 		
 		ArrayList<String> corpus = testCorpus.getCorpus();
 
-		System.out.println(testCorpus.getFiles());
+		System.out.println(corpus.size());
 
 	}
 }

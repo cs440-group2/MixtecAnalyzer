@@ -6,7 +6,6 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -64,11 +63,7 @@ public class FilterDialog extends JDialog implements ActionListener {
 		cancelButton.addActionListener(this);
 		buttonPanel.add(cancelButton);
 		
-		
-		
 		pane.add(buttonPanel, BorderLayout.SOUTH);
-		
-		
 		
 		pack();
 		setVisible(true);

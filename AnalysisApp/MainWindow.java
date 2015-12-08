@@ -285,6 +285,7 @@ public class MainWindow {
 							}
 							NumberFormat defaultFormat = NumberFormat.getPercentInstance();
 							String freqString = format.format((results.get(key)/(double) total)*100);
+							String s = "<HTML><FONT color=#8B0000>" + key;
 							Object[] arr = {key, gloss, Double.parseDouble(freqString), parts.toString()};
 							model.addRow(arr);
 						}
