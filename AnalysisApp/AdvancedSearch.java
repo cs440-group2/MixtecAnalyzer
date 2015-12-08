@@ -27,7 +27,7 @@ public class AdvancedSearch {
 						map.put(key, curr.get(key)+map.get(key));
 					}
 				}
-			}
+			} 
 			return map;
 
 		}
