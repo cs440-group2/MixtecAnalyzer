@@ -23,9 +23,8 @@ public class Corpus {
 	/**
 	 * Corpus constructor
 	 * @param directoryName - Absolute path to directory of transcription files
-	 * @throws UnsupportedEncodingException 
 	 */
-	public Corpus(String directoryName) throws UnsupportedEncodingException {
+	public Corpus(String directoryName) {
 		this.directoryName = directoryName;
 		corpus = new ArrayList<String>();
 		transFiles = new ArrayList<File>();
@@ -35,7 +34,7 @@ public class Corpus {
 	}
 
 	/**
-	 * Updates files to include all files in the directory and sub directories with .trs extension
+	 * Updates files to include all files in the directory and sub directories with .trs and .eaf extension
 	 * @param directoryName
 	 * @param files
 	 */
@@ -45,7 +44,7 @@ public class Corpus {
 
 		for(File file: fList){
 			if(file.isFile()){
-				if(file.getName().endsWith(".trs")){
+				if(file.getName().endsWith(".trs") || file.getName().endsWith(".eaf")){
 					files.add(file);
 				}
 			}
@@ -59,13 +58,11 @@ public class Corpus {
 	/**
 	 * Concatenates file contents into string, and adds strings to corpus ArrayList
 	 * @param files
-	 * @throws UnsupportedEncodingException 
 	 */
-	public void showFiles(ArrayList<File> files) throws UnsupportedEncodingException {
+	public void showFiles(ArrayList<File> files) {
 		for (File file : files) {
-
 			try {
-				BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "IO"));
+				BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "ISO-8859-1"));
 
 				String line;
 				String str = "";
@@ -90,8 +87,10 @@ public class Corpus {
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} catch (UnsupportedEncodingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
-
 		}
 	}
 	
@@ -108,7 +107,7 @@ public class Corpus {
 	}
 	
 	//test
-	public static void main(String[] args) throws UnsupportedEncodingException {
+	public static void main(String[] args) {
 		
 		JFileChooser chooser = new JFileChooser();
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -122,7 +121,8 @@ public class Corpus {
 		
 		ArrayList<String> corpus = testCorpus.getCorpus();
 
-		System.out.println(corpus.size());
+//		System.out.println(corpus.size());
+//		System.out.println(corpus);
 
 	}
 }

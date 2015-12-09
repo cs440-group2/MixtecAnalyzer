@@ -143,11 +143,11 @@ public class Dictionary {
 	 * @return
 	 */
 	public ArrayList<String> getFormList(String term){
-		if (!lemmaMap.get(term).equals(null)){
+		if (lemmaMap.keySet().contains(term)){
 			return lemmaMap.get(term).getForms();
 		}
 		else{
-			return null;
+			return new ArrayList<String>();
 		}
 	}
 	

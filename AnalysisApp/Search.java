@@ -7,7 +7,7 @@ public class Search {
 	static Corpus corpus;
 
 	public Search(Corpus corpus) {
-		this.corpus = corpus;
+		Search.corpus = corpus;
 	}
 	/**
 	 * @param lemma
