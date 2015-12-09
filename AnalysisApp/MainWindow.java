@@ -1,7 +1,7 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
-import java.awt.Point;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -17,7 +17,7 @@ import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
@@ -41,9 +41,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.plaf.FontUIResource;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
@@ -66,6 +67,19 @@ public class MainWindow {
 	private HashMap<String, Integer> results;
 	private String result;
 
+	public static void setUIFont(FontUIResource f) {
+        Enumeration keys = UIManager.getDefaults().keys();
+        while (keys.hasMoreElements()) {
+            Object key = keys.nextElement();
+            Object value = UIManager.get(key);
+            if (value instanceof FontUIResource) {
+                FontUIResource orig = (FontUIResource) value;
+                Font font = new Font(f.getFontName(), orig.getStyle(), f.getSize());
+                UIManager.put(key, new FontUIResource(font));
+            }
+        }
+    }
+	
 	/**
 	 * Launch the application.
 	 */
@@ -74,6 +88,7 @@ public class MainWindow {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
+					setUIFont(new FontUIResource(new Font("Arial", 0, 20)));
 					Properties settings = new Properties();
 					File settingsFile = new File("settings.properties");
 					MainWindow window = new MainWindow(settings);
@@ -285,7 +300,6 @@ public class MainWindow {
 							}
 							NumberFormat defaultFormat = NumberFormat.getPercentInstance();
 							String freqString = format.format((results.get(key)/(double) total)*100);
-							String s = "<HTML><FONT color=#8B0000>" + key;
 							Object[] arr = {key, gloss, Double.parseDouble(freqString), parts.toString()};
 							model.addRow(arr);
 						}

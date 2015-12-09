@@ -65,7 +65,7 @@ public class Corpus {
 		for (File file : files) {
 
 			try {
-				BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF8"));
+				BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "IO"));
 
 				String line;
 				String str = "";
