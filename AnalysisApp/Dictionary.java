@@ -16,7 +16,7 @@ public class Dictionary {
 	 * @throws IOException
 	 */
 	public Dictionary() throws IOException{ //TODO: Remove
-		this("C:\\Users\\Ian\\Desktop\\New folder\\mixtec_maestro_unicode_2015-08-25.txt");
+		this("/Users/Rebecca/Desktop/mixtec_maestro_unicode_2015-08-25.txt");
 	}
 	
 	/**
@@ -143,7 +143,12 @@ public class Dictionary {
 	 * @return
 	 */
 	public ArrayList<String> getFormList(String term){
-		return lemmaMap.get(term).getForms();
+		if (!lemmaMap.get(term).equals(null)){
+			return lemmaMap.get(term).getForms();
+		}
+		else{
+			return null;
+		}
 	}
 	
 	/**

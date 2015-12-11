@@ -100,7 +100,7 @@ public class Search {
 	 * @throws FileNotFoundException
 	 */
 	public static HashMap<String, Integer> postSearch(String lemma, Dictionary dictionary, String file) throws FileNotFoundException {
-
+ 
 		int total = 0;
 
 		char last = lemma.charAt(lemma.length()-1);
@@ -110,8 +110,8 @@ public class Search {
 		for (String form: dictionary.getFormList(lemma)){
 			search = search + "|" + form;
 		}
-		Pattern p1 = Pattern.compile("("+search+")" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
-		Pattern p2 = Pattern.compile("[\\w|-]+" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
+		Pattern p1 = Pattern.compile("\\s" + "("+search+")" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
+		Pattern p2 = Pattern.compile("[\\w|\\-|\\*|\\'|\uFFFD|\u02026|[A-zÀ-ú]]+" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
 
 		Matcher m1 = p1.matcher(file);
 		Matcher m2 = p2.matcher(file);
@@ -121,29 +121,60 @@ public class Search {
 		while (m1.find()) {
 			if (m2.find(m1.end())){
 				total++;
-				ArrayList<String> headers = dictionary.findHeaders(m2.group());
+
+				String origLemma = m2.group().replaceAll("\\=" + "[\\w'\\(\\)]+", "");
+				if (origLemma.contains("("))
+				{
+					origLemma = origLemma.replace("(", "");
+					origLemma = origLemma.replace(")", "");
+				}
+
+				ArrayList<String> headers = dictionary.findHeaders(origLemma);
+		
 				if (!headers.isEmpty()){
-					for (String i : headers)
-						if (!frequency.containsKey(i)){
+					for (String i : headers){
+						if (headers.size() > 1){
+							i = "<HTML><FONT color=#6B8E23>" + i;
+						}
+						if (!frequency.containsKey(i))
+						{
 							frequency.put(i,1);
 						}
 						else
 						{
 							frequency.put(i,frequency.get(i) + 1);
 						}
+					}
 				}
 				else{
-					String origLemma = m2.group().replaceAll("\\=" + "[\\w'\\(\\)]*", "");
-					if (origLemma.contains("(")){
-						origLemma = origLemma.replace("(", "");
-						origLemma = origLemma.replace(")", "");
+					headers = dictionary.findHeaders(m2.group());
+					
+					if (!headers.isEmpty()){
+						for (String i : headers){
+							if (headers.size() > 1){
+								i = "<HTML><FONT color=#6B8E23>" + i;
+							}
+							
+							if (!frequency.containsKey(i))
+							{
+								frequency.put(i,1);
+							}
+							else
+							{
+								frequency.put(i,frequency.get(i) + 1);
+							}
+						}
 					}
-					if (!frequency.containsKey(origLemma)){
-						frequency.put(origLemma,1);
-					}
-					else
-					{
-						frequency.put(origLemma,frequency.get(origLemma) + 1);
+					else{
+						if (!frequency.keySet().contains(m2.group())){
+							String s ="<HTML><FONT color=#8B0000>" + m2.group();
+							frequency.put(s, 1);
+						}
+						else
+						{
+							String s ="<HTML><FONT color=#8B0000>" + m2.group();
+							frequency.put(s, frequency.get(m2.group()) + 1);
+						}
 					}
 				}
 			}
@@ -170,8 +201,8 @@ public class Search {
 			search = search + "|" + form;
 		}
 
-		Pattern p1 = Pattern.compile("(" +search+")" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
-		Pattern p2 = Pattern.compile("[\\w|-]+" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
+		Pattern p1 = Pattern.compile("\\b" + "(" +search+")" + "(\\=|\\b)" + "[\\w\\(\\)]*" + "(\\=|\\b)*" + "[\\w\\(\\)]*");
+		Pattern p2 = Pattern.compile("\\b" + "[\\w|\\-|\\*|\\'|\uFFFD|\u02026|[A-zÀ-ú]]+" + "(\\=|\\b)" + "[\\w|'|(|)]*" + "(\\=|\\b)*" + "[\\w|'|(|)]*");
 
 		Matcher m1 = p2.matcher(file);
 		Matcher m2 = p2.matcher(file);
@@ -183,34 +214,25 @@ public class Search {
 				Matcher m3 = p1.matcher(match);
 				if (m3.find()){
 					total++;
-					ArrayList<String> headers = dictionary.findHeaders(m1.group());
-					if (!headers.isEmpty()){
-						for (String i : headers)
-							if (!frequency.containsKey(i)){
-								frequency.put(i, 1);
-							}
-							else
-							{
-								frequency.put(i,frequency.get(i) + 1);
-							}
+					String origLemma = m1.group().replaceAll("\\=" + "[\\w'\\(\\)]*", "");
+					if (origLemma.contains("(")){
+						origLemma = origLemma.replace("(", "");
+						origLemma = origLemma.replace(")", "");
 					}
-					else{
-						String origLemma = m1.group().replaceAll("\\=" + "[\\w'\\(\\)]*", "");
-						if (origLemma.contains("(")){
-							origLemma = origLemma.replace("(", "");
-							origLemma = origLemma.replace(")", "");
-						}
-						if (!frequency.containsKey(origLemma)){
-							frequency.put(origLemma,1);
+
+					ArrayList<String> headers = dictionary.findHeaders(origLemma);
+					for (String i : headers)
+						if (!frequency.containsKey(i)){
+							frequency.put(i, 1);
 						}
 						else
 						{
-							frequency.put(origLemma,frequency.get(origLemma) + 1);
+							frequency.put(i,frequency.get(i) + 1);
 						}
-					}
 				}
 			}
 		}
+
 		frequency.put("TERM_TOTAL", total);
 		return frequency;
 	}

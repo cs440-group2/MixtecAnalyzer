@@ -1,6 +1,7 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -12,6 +13,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -39,6 +41,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -61,6 +64,7 @@ public class MainWindow {
 	private JLabel topLabel;
 	private Properties settings;
 	private HashMap<String, Integer> results;
+	private String result;
 
 	/**
 	 * Launch the application.
@@ -127,7 +131,12 @@ public class MainWindow {
 				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 				int returnVal = chooser.showOpenDialog(frame);
 				if(returnVal == JFileChooser.APPROVE_OPTION) {
-					newCorpus(chooser.getSelectedFile().getAbsolutePath());
+					try {
+						newCorpus(chooser.getSelectedFile().getAbsolutePath());
+					} catch (UnsupportedEncodingException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				}
 			}
 		});
@@ -198,89 +207,6 @@ public class MainWindow {
 		JLabel lblNewLabel = new JLabel("Search for words:");
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		panel_4.add(lblNewLabel, BorderLayout.NORTH);
-
-		
-		JButton filterBtn = new JButton();
-		filterBtn.setEnabled(false);                  
-		filterBtn.setText("Filter Results");
-		
-		filterBtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e){
-				try{
-					filterOptions();
-				}catch(Exception ex){
-					
-				}
-			
-			}
-		});
-
-		JButton btnNewButton = new JButton("Advanced Search");
-		btnNewButton.setEnabled(false);							
-		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Object[] possibilities = {"0","1", "2", "3", "4"};
-				String s = (String)JOptionPane.showInputDialog(
-						frame,
-						"Select how many words you want inbetween:\n",
-						"Advanced Search",
-						JOptionPane.PLAIN_MESSAGE,
-						null,
-						possibilities,
-						"0");
-
-				int numBtwn;
-				try{
-					numBtwn = Integer.parseInt(s);
-
-				}catch(Exception ex){
-					return;
-				}
-
-				HashMap<String, Double> results = null;
-				try {
-					results = AdvancedSearch.advancedSearch(lemma, numBtwn, position, dict);
-				} catch (FileNotFoundException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				model = new DefaultTableModel();
-				model.addColumn("Appearing with search term");
-				model.addColumn("Gloss (meaning)");
-				model.addColumn("Frequency");
-				for (String key : results.keySet()) {
-					String gloss = "";
-					if(dict.getLemmaList().contains(key)) {
-						ArrayList<String> glosses = dict.getGlossList(key);
-						for(int i = 1; i < glosses.size(); i++) {
-							if(i!=1) {
-								gloss = gloss + ", ";
-							}
-							gloss = gloss + glosses.get(i);
-						}
-					}
-					NumberFormat defaultFormat = NumberFormat.getPercentInstance();
-					String[] arr = {key, gloss, new DecimalFormat("##.#").format(results.get(key)*100)};
-					model.addRow(arr);
-				}
-				String gloss = "";
-				ArrayList<String> glosses = dict.getGlossList(lemma);
-				for(int i = 1; i < glosses.size(); i++) {
-					if(i!=1) {
-						gloss = gloss + ", ";
-					}
-					gloss = gloss + glosses.get(i);
-				}
-
-				topLabel.setText("Found the lemma \""+lemma+"\" (" + gloss + ") " + results.keySet().size()+" times with " + numBtwn +" words inbetween.");
-				table.setModel(model);
-				DefaultRowSorter sorter = new TableRowSorter(model);
-				table.setRowSorter(sorter);
-			}
-		});
 
 		btnSearch.addActionListener(new ActionListener() {//search button action
 			public void actionPerformed(ActionEvent e) {
@@ -359,6 +285,7 @@ public class MainWindow {
 							}
 							NumberFormat defaultFormat = NumberFormat.getPercentInstance();
 							String freqString = format.format((results.get(key)/(double) total)*100);
+							String s = "<HTML><FONT color=#8B0000>" + key;
 							Object[] arr = {key, gloss, Double.parseDouble(freqString), parts.toString()};
 							model.addRow(arr);
 						}
@@ -390,9 +317,6 @@ public class MainWindow {
 					rightRenderer.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
 					table.getColumn("Frequency (%)").setCellRenderer( rightRenderer );
 				}
-			
-				btnNewButton.setEnabled(true);	
-				filterBtn.setEnabled(true); 
 			}
 
 		});
@@ -430,9 +354,92 @@ public class MainWindow {
 		panel_2.add(panel_5, BorderLayout.SOUTH);
 
 
-	
-		panel_5.add(btnNewButton);
+		JButton filterBtn = new JButton();
+		filterBtn.setText("Filter Results");
 		panel_5.add(filterBtn);
+		filterBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e){
+				filterOptions();
+			}
+		});
+
+		JButton btnNewButton = new JButton("Advanced Search");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Object[] possibilities = {"0","1", "2", "3", "4"};
+				String s = (String)JOptionPane.showInputDialog(
+						frame,
+						"Select how many words you want inbetween:\n",
+						"Advanced Search",
+						JOptionPane.PLAIN_MESSAGE,
+						null,
+						possibilities,
+						"0");
+
+				int numBtwn;
+				try{
+					numBtwn = Integer.parseInt(s);
+
+				}catch(Exception ex){
+					return;
+				}
+
+				HashMap<String, Double> results = null;
+				int row = table.getSelectedRow();
+				result = (String) table.getValueAt(row, 0);
+
+				try {
+					results = AdvancedSearch.advancedSearch(lemma, result, numBtwn, position, dict);
+					for (String key : results.keySet()){
+						if (!key.equals("TERM_TOTAL")){
+							Double freq = results.get(key)/results.get("TERM_TOTAL");
+							results.put(key, freq);
+						}
+					}
+					results.remove("TERM_TOTAL");
+				} catch (FileNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				model = new DefaultTableModel();
+				model.addColumn("Appearing with search term");
+				model.addColumn("Gloss (meaning)");
+				model.addColumn("Frequency");
+				for (String key : results.keySet()) {
+					String gloss = "";
+					if(dict.getLemmaList().contains(key)) {
+						ArrayList<String> glosses = dict.getGlossList(key);
+						for(int i = 1; i < glosses.size(); i++) {
+							if(i!=1) {
+								gloss = gloss + ", ";
+							}
+							gloss = gloss + glosses.get(i);
+						}
+					}
+					NumberFormat defaultFormat = NumberFormat.getPercentInstance();
+					String[] arr = {key, gloss, new DecimalFormat("##.#").format(results.get(key)*100)};
+					model.addRow(arr);
+				}
+				String gloss = "";
+				ArrayList<String> glosses = dict.getGlossList(lemma);
+				for(int i = 1; i < glosses.size(); i++) {
+					if(i!=1) {
+						gloss = gloss + ", ";
+					}
+					gloss = gloss + glosses.get(i);
+				}
+
+				topLabel.setText("Found the lemma \""+lemma+"\" (" + gloss + ") " + results.keySet().size()+" times with " + numBtwn +" words inbetween.");
+				table.setModel(model);
+				DefaultRowSorter sorter = new TableRowSorter(model);
+				table.setRowSorter(sorter);
+			}
+		});
+
+		panel_5.add(btnNewButton);
 
 		//TODO: Add to dictionary button
 		//JButton btnNewButton_1 = new JButton("Add to Dictionary");
@@ -446,7 +453,7 @@ public class MainWindow {
 
 	}
 
-	public void newCorpus(String filename){
+	public void newCorpus(String filename) throws UnsupportedEncodingException{
 		corpus = new Corpus(filename);
 		new Search(corpus);
 		if(corpus.getFiles().isEmpty()){
