@@ -208,6 +208,59 @@ public class MainWindow {
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		panel_4.add(lblNewLabel, BorderLayout.NORTH);
 
+		
+
+		textField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				if(dict == null) {
+					textField.setText("");
+					JOptionPane.showMessageDialog(frame,
+							"Please load dictionary first.", "Load Dictionary", JOptionPane.ERROR_MESSAGE);
+				}
+				else {
+					String text = textField.getText();
+					lemmas = dict.getLemmaList(text);
+					lemmaList.removeAllElements();
+					for(int i = 0; i < lemmas.size(); i++){
+						lemmaList.addElement(lemmas.get(i));
+					}
+					list.setModel(lemmaList);
+					list.updateUI();
+				}
+			}
+		});
+
+		JPanel panel_2 = new JPanel();
+		splitPane.setRightComponent(panel_2);
+		panel_2.setLayout(new BorderLayout(0, 0));
+
+		table = new JTable();
+		JScrollPane tableScroll = new JScrollPane(table);
+		panel_2.add(tableScroll);
+
+		JButton btnNewButton = new JButton("Advanced Search");
+		JButton filterBtn = new JButton();
+		
+		JPanel panel_5 = new JPanel();
+		panel_2.add(panel_5, BorderLayout.SOUTH);
+		panel_5.add(filterBtn);
+		panel_5.add(btnNewButton);
+		
+		
+		btnNewButton.setEnabled(false);
+		filterBtn.setEnabled(false);
+		
+		filterBtn.setText("Filter Results");
+//		panel_5.add(filterBtn);
+		filterBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e){
+				filterOptions();
+			}
+		});
+
+	
+		
 		btnSearch.addActionListener(new ActionListener() {//search button action
 			public void actionPerformed(ActionEvent e) {
 				if(dict == null) {
@@ -317,53 +370,12 @@ public class MainWindow {
 					rightRenderer.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
 					table.getColumn("Frequency (%)").setCellRenderer( rightRenderer );
 				}
+				filterBtn.setEnabled(true);
+				btnNewButton.setEnabled(true);
 			}
 
 		});
-
-		textField.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent e) {
-				if(dict == null) {
-					textField.setText("");
-					JOptionPane.showMessageDialog(frame,
-							"Please load dictionary first.", "Load Dictionary", JOptionPane.ERROR_MESSAGE);
-				}
-				else {
-					String text = textField.getText();
-					lemmas = dict.getLemmaList(text);
-					lemmaList.removeAllElements();
-					for(int i = 0; i < lemmas.size(); i++){
-						lemmaList.addElement(lemmas.get(i));
-					}
-					list.setModel(lemmaList);
-					list.updateUI();
-				}
-			}
-		});
-
-		JPanel panel_2 = new JPanel();
-		splitPane.setRightComponent(panel_2);
-		panel_2.setLayout(new BorderLayout(0, 0));
-
-		table = new JTable();
-		JScrollPane tableScroll = new JScrollPane(table);
-		panel_2.add(tableScroll);
-
-		JPanel panel_5 = new JPanel();
-		panel_2.add(panel_5, BorderLayout.SOUTH);
-
-
-		JButton filterBtn = new JButton();
-		filterBtn.setText("Filter Results");
-		panel_5.add(filterBtn);
-		filterBtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e){
-				filterOptions();
-			}
-		});
-
-		JButton btnNewButton = new JButton("Advanced Search");
+		
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Object[] possibilities = {"0","1", "2", "3", "4"};
@@ -439,7 +451,7 @@ public class MainWindow {
 			}
 		});
 
-		panel_5.add(btnNewButton);
+		
 
 		//TODO: Add to dictionary button
 		//JButton btnNewButton_1 = new JButton("Add to Dictionary");
@@ -553,5 +565,6 @@ public class MainWindow {
 		table.getColumn("Frequency (%)").setCellRenderer( rightRenderer );
 
 	}
+	
 
 }
