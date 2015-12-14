@@ -145,7 +145,7 @@ public class Dictionary {
 	 * @return ArrayList of forms
 	 */
 	public ArrayList<String> getFormList(String term){
-		if (lemmaMap.keySet().contains(term)){
+		if (lemmaMap.get(term)!=null){
 			return lemmaMap.get(term).getForms();
 		}
 		else{
