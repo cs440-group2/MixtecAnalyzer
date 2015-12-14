@@ -82,10 +82,10 @@ public class MainWindow {
 						settings.load(reader);
 						String dictLocation = settings.getProperty("dictionary");
 						String corpusLocation = settings.getProperty("corpus");
-						if(!dictLocation.equals(null)){
+						if(dictLocation != null){//TODO: Fix
 							window.newDict(dictLocation);
 						}
-						if(!corpusLocation.equals(null)){
+						if(corpusLocation != null){
 							window.newCorpus(corpusLocation);
 						}
 					}
