@@ -162,7 +162,7 @@ public class AdvancedSearch {
 		}
 
 		Pattern p1 = Pattern.compile("\\b" + "(" +search+")" + "(\\=|\\b)" + "[\\pL\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\pL\\w'\\(\\)]*");
-		Pattern p2 = Pattern.compile("[\\w|\\-|\\*|\\'|\uFFFD|(\\.\\.\\.)|\\pL]+" + "(\\=|\\b)*" + "[\\pL\\w'\\(\\)]*" + "(\\=|\\b)*" + "[\\pL\\w'\\(\\)]*");
+		Pattern p2 = Pattern.compile("[\\w|\\-|\\*|\\'|\uFFFD|(\\.{3})|\\pL]+" + "(\\=|\\b)*" + "[\\pL\\w'\\(\\)]*" + "(\\=|\\b)*" + "[\\pL\\w'\\(\\)]*");
 		Pattern p4 = Pattern.compile("\\b" + "(" +resultSearch+")" + "(\\=|\\b)" + "[\\pL\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\pL\\w'\\(\\)]*");
 
 		Matcher m1 = p2.matcher(file);

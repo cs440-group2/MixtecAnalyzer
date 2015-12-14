@@ -6,22 +6,24 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+/**
+ * Dictionary object
+ * 
+ * parses all information from a dictionary file and provides methods for accessing it
+ *
+ */
 public class Dictionary {
 	
 	private HashMap<String, Lemma> lemmaMap;
 	private ArrayList<String> lemmas;  
 	private HashMap<String, ArrayList<String>> formMap; //forms -> list of associated lemmas
 	private ArrayList<String> allParts;
-	/**
-	 * @throws IOException
-	 */
-	public Dictionary() throws IOException{ //TODO: Remove
-		this("/Users/Rebecca/Desktop/mixtec_maestro_unicode_2015-08-25.txt");
-	}
 	
 	/**
-	 * @param file
-	 * @throws IOException
+	 * Constructor
+	 * 
+	 * @param file path for dictionary file
+	 * @throws IOException If the file is not found or cannot be read
 	 */
 	public Dictionary(String file) throws IOException{
 		FileReader dictionaryReader;
@@ -99,16 +101,16 @@ public class Dictionary {
 	
 	/**
 	 * returns list of lemmas
-	 * @return
+	 * @return ArrayList of lemmas
 	 */
 	public ArrayList<String> getLemmaList(){//TODO: switch lemmas to lemmaMap keys
 		return (ArrayList<String>) lemmas.clone();
 	}
 	
 	/**
-	 * returns list of lemmas with given search term
-	 * @param refine
-	 * @return
+	 * returns list of lemmas starting with given string
+	 * @param refine term to search by
+	 * @return ArrayList of lemmas
 	 */
 	public ArrayList<String> getLemmaList(String refine){
 		ArrayList<String> returnArr = new ArrayList<String>();
@@ -121,8 +123,8 @@ public class Dictionary {
 	}
 	
 	/**
-	 * returns headers of associated lemmas
-	 * @param term
+	 * returns lemmas which the supplied word can be associated with
+	 * @param term 
 	 * @return
 	 */
 	public ArrayList<String> findHeaders(String term){
@@ -138,9 +140,9 @@ public class Dictionary {
 	}
 	
 	/**
-	 * Returns all forms of provided term, term must be a lemma.
-	 * @param term
-	 * @return
+	 * Returns all forms of provided term.
+	 * @param term must be a lemma
+	 * @return ArrayList of forms
 	 */
 	public ArrayList<String> getFormList(String term){
 		if (lemmaMap.keySet().contains(term)){
@@ -152,19 +154,31 @@ public class Dictionary {
 	}
 	
 	/**
-	 * returns glosses for provided term, term must be a lemma.
-	 * @param term
+	 * returns glosses for provided term.
+	 * @param term must be a lemma
 	 * @return
 	 */
 	public ArrayList<String> getGlossList(String term){
 		return lemmaMap.get(term).getGlosses();
 	}
 	
+	/**
+	 * Returns ArrayList of parts of speech associated with a word as an element of a specific lemma
+	 * (rather than as an element of any lemma, if word is in multiple lemmas)
+	 * @param term word of interest
+	 * @param lemmaString specifies lemma to look in
+	 * @return
+	 */
 	public ArrayList<String> getParts(String term, String lemmaString){//limited to parts as form of a specific lemma
 		Lemma lemma = lemmaMap.get(lemmaString);
 		return lemma.getParts(term);
 	}
 	
+	/**
+	 * Returns ArrayList of all parts of speech associated with a word
+	 * @param term word of interest
+	 * @return
+	 */
 	public ArrayList<String> getParts(String term){//all parts as form of all associated lemmas
 		ArrayList<String> result = new ArrayList<String>();
 		ArrayList<String> aLemmas = formMap.get(term);
@@ -174,11 +188,16 @@ public class Dictionary {
 		return result;
 	}
 	
+	/**
+	 * Returns an ArrayList list of all parts of speech found in the dictionary
+	 * @return
+	 */
 	public ArrayList<String> getAllParts(){
 		return (ArrayList<String>) allParts.clone();
 	}
 	
 	/**
+	 * 
 	 *
 	 */
 	private class Lemma{
@@ -190,6 +209,11 @@ public class Dictionary {
 		/**
 		 * @param header
 		 */
+		
+		/**
+		 * Constructor
+		 * @param header word that identifies the lemma
+		 */
 		public Lemma(String header){
 			this.header = header;
 			formList = new ArrayList<String>();
@@ -199,7 +223,8 @@ public class Dictionary {
 		}
 		
 		/**
-		 * @param newForm
+		 * add a new word to lemma
+		 * @param newForm word to add
 		 */
 		public void addForm(String form, String part){
 			if(forms.containsKey(form)){
@@ -216,7 +241,8 @@ public class Dictionary {
 		}
 		
 		/**
-		 * @param newGloss
+		 * add a gloss to lemma
+		 * @param newGloss gloss to add
 		 */
 		public void addGloss(String newGloss){
 			glosses.add(newGloss);
@@ -224,7 +250,7 @@ public class Dictionary {
 		
 		/**
 		 * Getter for forms of lemma.
-		 * @return ArrayList<String> of forms
+		 * @return ArrayList of forms
 		 */
 		public ArrayList<String> getForms(){
 			return new ArrayList<String>(forms.keySet());
@@ -239,13 +265,18 @@ public class Dictionary {
 		}
 		
 		/**
-		 * Getter for header field.
+		 * Getter for header of lemma
 		 * @return header
 		 */
 		public String getHeader(){
 			return header;
 		}
 		
+		/**
+		 * getter for parts associated with a particular form of the lemma
+		 * @param form word of interest
+		 * @return
+		 */
 		public ArrayList<String> getParts(String form){
 			return (ArrayList<String>) forms.get(form).clone();
 		}
@@ -275,23 +306,6 @@ public class Dictionary {
 		}
 		return sb.toString();
 	}
-	
-	
-	
-	/**
-	 * Main method for testing
-	 * @param args
-	 * @throws FileNotFoundException
-	 */
-	public static void main(String[] args) throws FileNotFoundException{// TODO: remove
-		try {
-			Dictionary dict = new Dictionary();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	
 	
 	
 }

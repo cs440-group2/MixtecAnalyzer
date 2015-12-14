@@ -35,8 +35,8 @@ public class Corpus {
 
 	/**
 	 * Updates files to include all files in the directory and sub directories with .trs and .eaf extension
-	 * @param directoryName
-	 * @param files
+	 * @param directoryName - absolute path to directory of transcription files
+	 * @param files - ArrayList of transcription files
 	 */
 	public void listFiles(String directoryName, ArrayList<File> files){
 		File directory = new File(directoryName);
@@ -57,7 +57,7 @@ public class Corpus {
 
 	/**
 	 * Concatenates file contents into string, and adds strings to corpus ArrayList
-	 * @param files
+	 * @param files - ArrayList of .trs and .eaf files 
 	 */
 	public void showFiles(ArrayList<File> files) {
 		for (File file : files) {
@@ -67,7 +67,6 @@ public class Corpus {
 				String line;
 				String str = "";
 
-				//read file line by line
 				try {
 					while((line = br.readLine())  != null){
 
@@ -87,42 +86,43 @@ public class Corpus {
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} catch (UnsupportedEncodingException e1) {
+			} catch (UnsupportedEncodingException e) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				e.printStackTrace();
 			}
 		}
 	}
 	
 	/**
 	 * Getter for corpus generated from transcription files
-	 * @return corpus
+	 * @return corpus - ArrayList of Strings containing transcriptions
 	 */
 	public ArrayList<String> getCorpus() {
 		return corpus;
 	}
 	
+	/**
+	 * Getter for files 
+	 * @return transFiles - ArrayList of Files containing .trs and .eaf files
+	 */
 	public ArrayList<File> getFiles() {
 		return transFiles;
 	}
 	
-	//test
-	public static void main(String[] args) {
-		
+	/**
+	 * test
+	 */
+	public static void main(String[] args) {	
 		JFileChooser chooser = new JFileChooser();
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 	    int returnVal = chooser.showOpenDialog(null);
+	    
 	    if(returnVal == JFileChooser.APPROVE_OPTION) {
 	       System.out.println("You chose to open this folder: " +
 	            chooser.getSelectedFile().getName());
 	    }
-		
-		Corpus testCorpus = new Corpus(chooser.getSelectedFile().getAbsolutePath());
-		
+	    
+		Corpus testCorpus = new Corpus(chooser.getSelectedFile().getAbsolutePath());	
 		ArrayList<String> corpus = testCorpus.getCorpus();
-
-//		System.out.println(corpus.size());
-//		System.out.println(corpus);
-
 	}
 }
