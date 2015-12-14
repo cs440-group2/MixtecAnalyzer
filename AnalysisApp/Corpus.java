@@ -108,21 +108,4 @@ public class Corpus {
 	public ArrayList<File> getFiles() {
 		return transFiles;
 	}
-	
-	/**
-	 * test
-	 */
-	public static void main(String[] args) {	
-		JFileChooser chooser = new JFileChooser();
-		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-	    int returnVal = chooser.showOpenDialog(null);
-	    
-	    if(returnVal == JFileChooser.APPROVE_OPTION) {
-	       System.out.println("You chose to open this folder: " +
-	            chooser.getSelectedFile().getName());
-	    }
-	    
-		Corpus testCorpus = new Corpus(chooser.getSelectedFile().getAbsolutePath());	
-		ArrayList<String> corpus = testCorpus.getCorpus();
-	}
 }
