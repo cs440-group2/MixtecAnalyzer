@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
@@ -33,9 +34,9 @@ public class Corpus {
 	}
 
 	/**
-	 * Updates files to include all files in the directory and sub directories with .trs extension
-	 * @param directoryName
-	 * @param files
+	 * Updates files to include all files in the directory and sub directories with .trs and .eaf extension
+	 * @param directoryName - absolute path to directory of transcription files
+	 * @param files - ArrayList of transcription files
 	 */
 	public void listFiles(String directoryName, ArrayList<File> files){
 		File directory = new File(directoryName);
@@ -43,7 +44,7 @@ public class Corpus {
 
 		for(File file: fList){
 			if(file.isFile()){
-				if(file.getName().endsWith(".trs")){
+				if(file.getName().endsWith(".trs") || file.getName().endsWith(".eaf")){
 					files.add(file);
 				}
 			}
@@ -56,19 +57,16 @@ public class Corpus {
 
 	/**
 	 * Concatenates file contents into string, and adds strings to corpus ArrayList
-	 * @param files
+	 * @param files - ArrayList of .trs and .eaf files 
 	 */
 	public void showFiles(ArrayList<File> files) {
 		for (File file : files) {
-
 			try {
-				FileInputStream input = new FileInputStream(file);
-				BufferedReader br = new BufferedReader(new InputStreamReader(input));
+				BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "ISO-8859-1"));
 
 				String line;
 				String str = "";
 
-				//read file line by line
 				try {
 					while((line = br.readLine())  != null){
 
@@ -88,39 +86,43 @@ public class Corpus {
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-
 		}
 	}
 	
 	/**
 	 * Getter for corpus generated from transcription files
-	 * @return corpus
+	 * @return corpus - ArrayList of Strings containing transcriptions
 	 */
 	public ArrayList<String> getCorpus() {
 		return corpus;
 	}
 	
+	/**
+	 * Getter for files 
+	 * @return transFiles - ArrayList of Files containing .trs and .eaf files
+	 */
 	public ArrayList<File> getFiles() {
 		return transFiles;
 	}
 	
-	//test
-	public static void main(String[] args) {
-		
+	/**
+	 * test
+	 */
+	public static void main(String[] args) {	
 		JFileChooser chooser = new JFileChooser();
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 	    int returnVal = chooser.showOpenDialog(null);
+	    
 	    if(returnVal == JFileChooser.APPROVE_OPTION) {
 	       System.out.println("You chose to open this folder: " +
 	            chooser.getSelectedFile().getName());
 	    }
-		
-		Corpus testCorpus = new Corpus(chooser.getSelectedFile().getAbsolutePath());
-		
+	    
+		Corpus testCorpus = new Corpus(chooser.getSelectedFile().getAbsolutePath());	
 		ArrayList<String> corpus = testCorpus.getCorpus();
-
-		System.out.println(corpus.size());
-
 	}
 }
