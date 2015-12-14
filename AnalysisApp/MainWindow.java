@@ -428,7 +428,7 @@ public class MainWindow {
 					gloss = gloss + glosses.get(i);
 				}
 
-				topLabel.setText("Found the lemma \""+lemma+"\" (" + gloss + ") " + results.keySet().size()+" times with " + numBtwn +" words inbetween.");
+				topLabel.setText("Found the pair \""+lemma+" (" + gloss + ") " + result  + "\" was found " + results.keySet().size()+" times with up to " + numBtwn +" words inbetween.");
 				table.setModel(model);
 				DefaultRowSorter sorter = new TableRowSorter(model);
 				table.setRowSorter(sorter);

@@ -17,30 +17,34 @@ public class AdvancedSearch {
 		Corpus corpus = Search.corpus;
 		if (position.equals("preceding")){
 			HashMap<String, Double> map = new HashMap<String, Double>();
-			for (String file : corpus.getCorpus()){
-				HashMap<String, Double> curr = preAdvancedSearch(lemma, result, numBtwn, dict, file);
-				for (String key : curr.keySet()){
-					if (!map.containsKey(key)){
-						map.put(key, curr.get(key));
+			for (int i = 0; i <= numBtwn; i ++){
+				for (String file : corpus.getCorpus()){
+					HashMap<String, Double> curr = preAdvancedSearch(lemma, result, i, dict, file);
+					for (String key : curr.keySet()){
+						if (!map.containsKey(key)){
+							map.put(key, curr.get(key));
+						}
+						else{
+							map.put(key, curr.get(key)+map.get(key));
+						}
 					}
-					else{
-						map.put(key, curr.get(key)+map.get(key));
-					}
-				}
-			} 
+				} 
+			}
 			return map;
 
 		}
 		if (position.equals("following")){
 			HashMap<String, Double> map = new HashMap<String, Double>();
 			for (String file : corpus.getCorpus()){
-				HashMap<String, Double> curr = postAdvancedSearch(lemma, result, numBtwn, dict, file);
-				for (String key : curr.keySet()){
-					if (!map.containsKey(key)){
-						map.put(key, curr.get(key));
-					}
-					else{
-						map.put(key, curr.get(key)+map.get(key));
+				for (int i = 0; i <= numBtwn; i ++){
+					HashMap<String, Double> curr = postAdvancedSearch(lemma, result, i, dict, file);
+					for (String key : curr.keySet()){
+						if (!map.containsKey(key)){
+							map.put(key, curr.get(key));
+						}
+						else{
+							map.put(key, curr.get(key)+map.get(key));
+						}
 					}
 				}
 			}
@@ -73,13 +77,13 @@ public class AdvancedSearch {
 	 */
 	public static HashMap<String, Double> postAdvancedSearch(String lemma, String result, int NumBtwn, Dictionary dictionary, String file) {
 		Double total = 0.0;
-		
+
 		result = result.replace("<HTML><FONT color=#6B8E23>", "");
 		result = result.replace("<HTML><FONT color=#8B0000>", "");
 
 		char last = lemma.charAt(lemma.length()-1);
 		String derLemma = lemma.substring(0, lemma.length() - 1) + "\\(" + last + "\\)";
-		
+
 		last = result.charAt(result.length()-1);
 		String derResult = result.substring(0, result.length() - 1) + "\\(" + last + "\\)";
 
@@ -93,9 +97,9 @@ public class AdvancedSearch {
 			resultSearch = resultSearch + "|" + form;
 		}
 
-		Pattern p1 = Pattern.compile("\\s" + "("+search+")" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
-		Pattern p2 = Pattern.compile("\\s" + "[\\w|\\-|\\*]+" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
-		Pattern p3 = Pattern.compile("\\s" + "("+resultSearch+")" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
+		Pattern p1 = Pattern.compile("\\s" + "("+search+")" + "(\\=|\\b)" + "[\\pL\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\pL\\w'\\(\\)]*");
+		Pattern p2 = Pattern.compile("\\s" + "[\\w|\\-|\\*|\\'|\uFFFD|(\\.\\.\\.)|\\pL]+" + "(\\=|\\b)*" + "[\\pL\\w'\\(\\)]*" + "(\\=|\\b)*" + "[\\pL\\w'\\(\\)]*");
+		Pattern p3 = Pattern.compile("\\s" + "("+resultSearch+")" + "(\\=|\\b)" + "[\\pL\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\pL\\w'\\(\\)]*");
 
 		Matcher m1 = p1.matcher(file);
 		Matcher m2 = p2.matcher(file);
@@ -157,9 +161,9 @@ public class AdvancedSearch {
 			resultSearch = resultSearch + "|" + form;
 		}
 
-		Pattern p1 = Pattern.compile("\\b" + "(" +search+")" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
-		Pattern p2 = Pattern.compile("[\\w|//-|\\*]+" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
-		Pattern p4 = Pattern.compile("\\b" + "(" +resultSearch+")" + "(\\=|\\b)" + "[\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\w'\\(\\)]*");
+		Pattern p1 = Pattern.compile("\\b" + "(" +search+")" + "(\\=|\\b)" + "[\\pL\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\pL\\w'\\(\\)]*");
+		Pattern p2 = Pattern.compile("[\\w|\\-|\\*|\\'|\uFFFD|(\\.\\.\\.)|\\pL]+" + "(\\=|\\b)*" + "[\\pL\\w'\\(\\)]*" + "(\\=|\\b)*" + "[\\pL\\w'\\(\\)]*");
+		Pattern p4 = Pattern.compile("\\b" + "(" +resultSearch+")" + "(\\=|\\b)" + "[\\pL\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\pL\\w'\\(\\)]*");
 
 		Matcher m1 = p2.matcher(file);
 		Matcher m2 = p2.matcher(file);
