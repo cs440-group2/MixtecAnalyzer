@@ -79,7 +79,7 @@ public class MainWindow {
 						settings.load(reader);
 						String dictLocation = settings.getProperty("dictionary");
 						String corpusLocation = settings.getProperty("corpus");
-						if(dictLocation != null){//TODO: Fix
+						if(dictLocation != null){
 							window.newDict(dictLocation);
 						}
 						if(corpusLocation != null){
@@ -310,7 +310,7 @@ public class MainWindow {
 						}
 					};
 					tableModel.addColumn("Appearing with search term");
-					tableModel.addColumn("Gloss (meaning)");
+					tableModel.addColumn("Gloss");
 					tableModel.addColumn("Frequency (%)");
 					tableModel.addColumn("Parts of Speech");
 
