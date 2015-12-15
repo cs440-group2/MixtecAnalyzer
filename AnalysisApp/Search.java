@@ -237,14 +237,4 @@ public class Search {
 		frequency.put("TERM_TOTAL", total);
 		return frequency;
 	}
-	public static void main(String[] args) {
-		String result = "**barrio*";
-		//result = result.replace("*", "//*");
-		String resultSearch = Pattern.quote(result);
-		String file = " **barrio*";
-		Pattern p1 = Pattern.compile("\\s" + "[\\w|\\-|\\*|\\'|\uFFFD|(\\.{3})|\\pL]+" + "(\\=|\\b)*" + "[\\pL\\w'\\(\\)]*" + "(\\=|\\b)*" + "[\\pL\\w'\\(\\)]*");
-		Matcher m1 = p1.matcher(file);
-		m1.find();
-		System.out.println(m1.group());
-	}
 }
