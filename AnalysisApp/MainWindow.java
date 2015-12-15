@@ -48,7 +48,7 @@ import javax.swing.table.TableRowSorter;
 public class MainWindow {
 
 	private JFrame frame;
-	private DefaultTableModel model;
+	private DefaultTableModel tableModel;
 	private JTextField textField;
 	private JTable table;
 	private JList list;
@@ -249,7 +249,6 @@ public class MainWindow {
 		filterBtn.setEnabled(false);
 		
 		filterBtn.setText("Filter Results");
-//		panel_5.add(filterBtn);
 		filterBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e){
 				filterOptions();
@@ -299,7 +298,7 @@ public class MainWindow {
 					}
 
 					int total = results.get("TERM_TOTAL");
-					model = new DefaultTableModel(){
+					tableModel = new DefaultTableModel(){
 						@Override
 						public Class getColumnClass(int column){
 							if(column == 2){
@@ -310,10 +309,10 @@ public class MainWindow {
 							}
 						}
 					};
-					model.addColumn("Appearing with search term");
-					model.addColumn("Gloss (meaning)");
-					model.addColumn("Frequency (%)");
-					model.addColumn("Parts of Speech");
+					tableModel.addColumn("Appearing with search term");
+					tableModel.addColumn("Gloss (meaning)");
+					tableModel.addColumn("Frequency (%)");
+					tableModel.addColumn("Parts of Speech");
 
 					DecimalFormat format = new DecimalFormat("##.###");
 					for (String key : results.keySet()) {
@@ -339,7 +338,7 @@ public class MainWindow {
 							NumberFormat defaultFormat = NumberFormat.getPercentInstance();
 							String freqString = format.format((results.get(key)/(double) total)*100);
 							Object[] arr = {key, gloss, Double.parseDouble(freqString), parts.toString()};
-							model.addRow(arr);
+							tableModel.addRow(arr);
 						}
 					}
 					String gloss = "";
@@ -361,8 +360,8 @@ public class MainWindow {
 						topLabel.setText("Found the lemma \""+lemma+"\" (" + gloss + ") " + total +" times.");
 
 					}
-					table.setModel(model);
-					DefaultRowSorter sorter = new TableRowSorter(model);
+					table.setModel(tableModel);
+					DefaultRowSorter sorter = new TableRowSorter(tableModel);
 					table.setRowSorter(sorter);
 
 					DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
@@ -408,17 +407,14 @@ public class MainWindow {
 						}
 					}
 					results.remove("TERM_TOTAL");
-				} catch (FileNotFoundException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				model = new DefaultTableModel();
-				model.addColumn("Appearing with search term");
-				model.addColumn("Gloss (meaning)");
-				model.addColumn("Frequency");
+				tableModel = new DefaultTableModel();
+				tableModel.addColumn("Appearing with search term");
+				tableModel.addColumn("Gloss (meaning)");
+				tableModel.addColumn("Frequency");
 				for (String key : results.keySet()) {
 					String gloss = "";
 					if(dict.getLemmaList().contains(key)) {
@@ -432,7 +428,7 @@ public class MainWindow {
 					}
 					NumberFormat defaultFormat = NumberFormat.getPercentInstance();
 					String[] arr = {key, gloss, new DecimalFormat("##.#").format(results.get(key)*100)};
-					model.addRow(arr);
+					tableModel.addRow(arr);
 				}
 				String gloss = "";
 				ArrayList<String> glosses = dict.getGlossList(lemma);
@@ -444,24 +440,15 @@ public class MainWindow {
 				}
 
 				topLabel.setText("Found the pair \""+lemma+" (" + gloss + ") " + result  + "\" was found " + results.keySet().size()+" times with up to " + numBtwn +" words inbetween.");
-				table.setModel(model);
-				DefaultRowSorter sorter = new TableRowSorter(model);
+				table.setModel(tableModel);
+				DefaultRowSorter sorter = new TableRowSorter(tableModel);
 				table.setRowSorter(sorter);
 			}
 		});
 
-		
-
-		//TODO: Add to dictionary button
-		//JButton btnNewButton_1 = new JButton("Add to Dictionary");
-		//panel_5.add(btnNewButton_1);
-
 		topLabel = new JLabel();
 		topLabel.setText("No Corpus Loaded");
 		panel_2.add(topLabel, BorderLayout.NORTH);
-
-
-
 	}
 
 	public void newCorpus(String filename) throws UnsupportedEncodingException{
@@ -516,9 +503,9 @@ public class MainWindow {
 	public void filterOptions(){
 		List<String> filterList = FilterDialog.showDialog(frame, dict.getAllParts());
 		if(filterList.isEmpty()){
-			table.setModel(model);
-			model.fireTableStructureChanged();
-			table.setRowSorter(new TableRowSorter(model));
+			table.setModel(tableModel);
+			tableModel.fireTableStructureChanged();
+			table.setRowSorter(new TableRowSorter(tableModel));
 		}
 		else{
 			DefaultTableModel filteredModel = new DefaultTableModel(){
@@ -532,11 +519,11 @@ public class MainWindow {
 					}
 				}
 			};
-			for(int col = 0; col < model.getColumnCount(); col++){
-				filteredModel.addColumn(model.getColumnName(col));
+			for(int col = 0; col < tableModel.getColumnCount(); col++){
+				filteredModel.addColumn(tableModel.getColumnName(col));
 			}
-			for(int row = 0; row < model.getRowCount(); row++){
-				String resultParts = (String) model.getValueAt(row, 3);
+			for(int row = 0; row < tableModel.getRowCount(); row++){
+				String resultParts = (String) tableModel.getValueAt(row, 3);
 				boolean include = false;
 				for(String part:filterList){
 					Pattern p = Pattern.compile("(^|\\s)" + part + "(,|$)");
@@ -546,9 +533,9 @@ public class MainWindow {
 					}
 				}
 				if(include){
-					Object[] rowData = new Object[model.getColumnCount()];
-					for(int col = 0; col < model.getColumnCount(); col++){
-						rowData[col] = model.getValueAt(row, col);
+					Object[] rowData = new Object[tableModel.getColumnCount()];
+					for(int col = 0; col < tableModel.getColumnCount(); col++){
+						rowData[col] = tableModel.getValueAt(row, col);
 					}
 					filteredModel.addRow(rowData);
 				}
