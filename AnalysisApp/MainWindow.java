@@ -1,6 +1,8 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -13,6 +15,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -25,6 +28,7 @@ import java.util.regex.Pattern;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.DefaultRowSorter;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -62,7 +66,14 @@ public class MainWindow {
 	private Properties settings;
 	private HashMap<String, Integer> results;
 	private String result;
-	
+	private static String user_folder;
+
+	private final static String SETTINGS_LOCATION = "mixtec_pattern_search.properties";
+	private final static String ICON_LOCATION = "res/Icon.png";
+	private final static String DICTIONARY_PROPERTY = "dictionary";
+	private final static String CORPUS_PROPERTY = "corpus";
+	private final static String FILE_SEPARATOR = "/";
+
 	/**
 	 * Launch the application.
 	 */
@@ -70,26 +81,32 @@ public class MainWindow {
 
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
+				Properties settings = new Properties();
+				String os = System.getProperty("os.name");
+				if(os.startsWith("windows")) {
+					user_folder = System.getenv("APPDATA");
+				}
+				else {
+					user_folder = System.getProperty("user.home");
+				}
+				File settingsFile = new File();
 				try {
-					Properties settings = new Properties();
-					File settingsFile = new File("settings.properties");
-					MainWindow window = new MainWindow(settings);
-					if(settingsFile.exists()){
+				MainWindow window = new MainWindow(settings);
+				if(settingsFile.exists()){
 						FileReader reader = new FileReader(settingsFile);
 						settings.load(reader);
-						String dictLocation = settings.getProperty("dictionary");
-						String corpusLocation = settings.getProperty("corpus");
-						if(dictLocation != null){//TODO: Fix
+						String dictLocation = settings.getProperty(DICTIONARY_PROPERTY);
+						String corpusLocation = settings.getProperty(CORPUS_PROPERTY);
+						if(dictLocation != null){
 							window.newDict(dictLocation);
 						}
 						if(corpusLocation != null){
 							window.newCorpus(corpusLocation);
 						}
-					}
-					window.frame.setVisible(true);
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+						window.frame.setVisible(true);
+				}
+				} catch(Exception e){
+					e.printStackTrace();
 				}
 			}
 		});
@@ -109,9 +126,14 @@ public class MainWindow {
 	 * @throws IOException 
 	 */
 	private void initialize() throws IOException {
-		frame = new JFrame();
+		frame = new JFrame("Mixtec Collocation Finder");
 		frame.setBounds(100, 100, 1000, 800);
+		URL url = MainWindow.class.getResource(ICON_LOCATION); 
+		Image image = Toolkit.getDefaultToolkit().getImage(url);
+		frame.setIconImage(new ImageIcon(image).getImage());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		//setUpMenu();
 
 
 		//Set up menu bar
@@ -205,7 +227,7 @@ public class MainWindow {
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		panel_4.add(lblNewLabel, BorderLayout.NORTH);
 
-		
+
 
 		textField.addKeyListener(new KeyAdapter() {
 			@Override
@@ -238,26 +260,26 @@ public class MainWindow {
 
 		JButton btnNewButton = new JButton("Advanced Search");
 		JButton filterBtn = new JButton();
-		
+
 		JPanel panel_5 = new JPanel();
 		panel_2.add(panel_5, BorderLayout.SOUTH);
 		panel_5.add(filterBtn);
 		panel_5.add(btnNewButton);
-		
-		
+
+
 		btnNewButton.setEnabled(false);
 		filterBtn.setEnabled(false);
-		
+
 		filterBtn.setText("Filter Results");
-//		panel_5.add(filterBtn);
+		//		panel_5.add(filterBtn);
 		filterBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e){
 				filterOptions();
 			}
 		});
 
-	
-		
+
+
 		btnSearch.addActionListener(new ActionListener() {//search button action
 			public void actionPerformed(ActionEvent e) {
 				if(dict == null) {
@@ -371,7 +393,7 @@ public class MainWindow {
 			}
 
 		});
-		
+
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Object[] possibilities = {"0","1", "2", "3", "4"};
@@ -447,18 +469,9 @@ public class MainWindow {
 			}
 		});
 
-		
-
-		//TODO: Add to dictionary button
-		//JButton btnNewButton_1 = new JButton("Add to Dictionary");
-		//panel_5.add(btnNewButton_1);
-
 		topLabel = new JLabel();
 		topLabel.setText("No Corpus Loaded");
 		panel_2.add(topLabel, BorderLayout.NORTH);
-
-
-
 	}
 
 	public void newCorpus(String filename) throws UnsupportedEncodingException{
@@ -470,7 +483,7 @@ public class MainWindow {
 		}
 		else{
 			topLabel.setText("Transcriptions Loaded");
-			settings.setProperty("corpus", filename);
+			settings.setProperty(CORPUS_PROPERTY, filename);
 			saveSettings();
 		}
 	}
@@ -487,7 +500,7 @@ public class MainWindow {
 			list.setModel(lemmaList);
 			textField.setEnabled(true);
 			textField.setText("");
-			settings.setProperty("dictionary", filename);
+			settings.setProperty(DICTIONARY_PROPERTY, filename);
 			saveSettings();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -498,7 +511,8 @@ public class MainWindow {
 
 
 	public void saveSettings(){
-		File settingsFile = new File("settings.properties");
+		URL url = MainWindow.class.getResource(System.getProperty("user.home") + FILE_SEPARATOR + SETTINGS_LOCATION);
+		File settingsFile = new File(url.getPath());
 		try{
 			FileWriter writer = new FileWriter(settingsFile);
 			settings.store(writer, null);
@@ -561,6 +575,6 @@ public class MainWindow {
 		table.getColumn("Frequency (%)").setCellRenderer( rightRenderer );
 
 	}
-	
+
 
 }
