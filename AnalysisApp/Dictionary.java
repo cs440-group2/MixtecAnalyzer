@@ -1,7 +1,9 @@
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -26,11 +28,9 @@ public class Dictionary {
 	 * @throws IOException If the file is not found or cannot be read
 	 */
 	public Dictionary(String file) throws IOException{
-		FileReader dictionaryReader;
 		BufferedReader bReader;
 
-		dictionaryReader = new FileReader(file);
-		bReader = new BufferedReader(dictionaryReader);
+		bReader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
 		
 		String line = bReader.readLine();
 		lemmaMap = new HashMap<String, Lemma>();
