@@ -398,19 +398,14 @@ public class MainWindow {
 				int row = table.getSelectedRow();
 				result = (String) table.getValueAt(row, 0);
 
-				try {
-					results = AdvancedSearch.advancedSearch(lemma, result, numBtwn, position, dict);
-					for (String key : results.keySet()){
-						if (!key.equals("TERM_TOTAL")){
-							Double freq = results.get(key)/results.get("TERM_TOTAL");
-							results.put(key, freq);
-						}
+				results = AdvancedSearch.advancedSearch(lemma, result, numBtwn, position, dict);
+				for (String key : results.keySet()){
+					if (!key.equals("TERM_TOTAL")){
+						Double freq = results.get(key)/results.get("TERM_TOTAL");
+						results.put(key, freq);
 					}
-					results.remove("TERM_TOTAL");
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
 				}
+				results.remove("TERM_TOTAL");
 				tableModel = new DefaultTableModel();
 				tableModel.addColumn("Appearing with search term");
 				tableModel.addColumn("Gloss (meaning)");

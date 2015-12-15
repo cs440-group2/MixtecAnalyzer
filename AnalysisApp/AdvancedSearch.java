@@ -14,7 +14,7 @@ public class AdvancedSearch {
 	 * @return HashMap of found lemmas and their frequency relative to the total lemmas found
 	 * @throws FileNotFoundException
 	 */
-	public static HashMap<String, Double> advancedSearch(String lemma, String result, int numBtwn, String position, Dictionary dict) throws FileNotFoundException {
+	public static HashMap<String, Double> advancedSearch(String lemma, String result, int numBtwn, String position, Dictionary dict){
 		Corpus corpus = Search.corpus;
 		if (position.equals("preceding")){
 			HashMap<String, Double> map = new HashMap<String, Double>();
