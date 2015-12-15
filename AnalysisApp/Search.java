@@ -12,9 +12,10 @@ public class Search {
 		Search.corpus = corpus;
 	}
 	/**
+	 * Searches for parings based on position inputed by the user
 	 * @param lemma
 	 * @param position
-	 * @return
+	 * @return HashMap of found lemmas and their frequency relative to the total lemmas found
 	 * @throws IOException 
 	 */
 	public static HashMap<String, Integer> search(String lemma, String position, Dictionary dict, List<String> otherForms) throws IOException{
@@ -95,6 +96,12 @@ public class Search {
 		}
 	}
 
+	/**
+	 * Configures search results and their frequencies into a has map
+	 * @param HashMap of results 
+	 * @param dictionary Mixtec dictionary
+	 * @param match result found by the search
+	 */
 	public static void addResult(HashMap<String, Integer> frequency, Dictionary dictionary, String match){
 		String origLemma = match.replaceAll("\\=" + "[\\w'\\(\\)]+", "");
 		if (origLemma.contains("("))
@@ -153,7 +160,7 @@ public class Search {
 		}
 	}
 	/**
-	 * 
+	 * Searches for lemmas following the searched lemma and calculates their frequencies 
 	 * @param lemma: term searched by the user
 	 * @param dictionary: mixtec dictionary
 	 * @return HashMap of found lemmas following searched lemma and their frequency relative to the total lemmas found
@@ -171,7 +178,7 @@ public class Search {
 			search = search + "|" + form;
 		}
 		Pattern p1 = Pattern.compile("\\b" + "("+search+")" + "(\\=|\\b)" + "[\\pL\\w'\\(\\)]*" + "(\\=|\\b)" + "[\\pL\\w'\\(\\)]*");
-		Pattern p2 = Pattern.compile("\\b" + "[\\w|\\-|\\*|\\'|\uFFFD|\\.{3}|\\pL]+" + "(\\=|\\b)" + "[\\pL\\w'\\(\\)]*" + "(\\=|\\b)*" + "[\\pL\\w'\\(\\)]*");
+		Pattern p2 = Pattern.compile("[\\w|\\-|\\*|\\'|\uFFFD|\\.{3}|\\pL]+" + "(\\=|\\b)*" + "[\\pL\\w'\\(\\)]*" + "(\\=|\\b)*" + "[\\pL\\w'\\(\\)]*");
 
 		Matcher m1 = p1.matcher(file);
 		Matcher m2 = p2.matcher(file);
@@ -191,7 +198,7 @@ public class Search {
 
 
 	/**
-	 * 
+	 * Searches for lemmas preceding the searched lemma and calculates their frequencies 
 	 * @param lemma: term searched by the user
 	 * @param dictionary: mixtec dictionary
 	 * @return HashMap of found lemmas preceding searched lemma and their frequency relative to the total lemmas found
@@ -210,7 +217,7 @@ public class Search {
 		}
 
 		Pattern p1 = Pattern.compile("\\b" + "(" +search+")" + "(\\=|\\b)" + "[\\pL\\w'\\(\\)]*" + "(\\=|\\b)*" + "[\\pL\\w\\(\\)]*");
-		Pattern p2 = Pattern.compile("\\b" + "[\\w|\\-|\\*|\\'|\uFFFD|\\.{3}|\\pL]+" + "(\\=|\\b)*" + "[\\pL\\w\\(\\)]*" + "(\\=|\\b)*" + "[\\pL\\w\\(\\)]*");
+		Pattern p2 = Pattern.compile("[\\w|\\-|\\*|\\'|\uFFFD|\\.{3}|\\pL]+" + "(\\=|\\b)*" + "[\\pL\\w\\(\\)]*" + "(\\=|\\b)*" + "[\\pL\\w\\(\\)]*");
 
 		Matcher m1 = p2.matcher(file);
 		Matcher m2 = p2.matcher(file);
@@ -229,5 +236,15 @@ public class Search {
 
 		frequency.put("TERM_TOTAL", total);
 		return frequency;
+	}
+	public static void main(String[] args) {
+		String result = "**barrio*";
+		//result = result.replace("*", "//*");
+		String resultSearch = Pattern.quote(result);
+		String file = " **barrio*";
+		Pattern p1 = Pattern.compile("\\s" + "[\\w|\\-|\\*|\\'|\uFFFD|(\\.{3})|\\pL]+" + "(\\=|\\b)*" + "[\\pL\\w'\\(\\)]*" + "(\\=|\\b)*" + "[\\pL\\w'\\(\\)]*");
+		Matcher m1 = p1.matcher(file);
+		m1.find();
+		System.out.println(m1.group());
 	}
 }

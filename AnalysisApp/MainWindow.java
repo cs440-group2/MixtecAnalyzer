@@ -268,6 +268,10 @@ public class MainWindow {
 					JOptionPane.showMessageDialog(frame, "Please load transcriptions first.",
 							"Load Transcriptions", JOptionPane.ERROR_MESSAGE);
 				}
+				else if (list.getSelectedValue() == null){
+					JOptionPane.showMessageDialog(frame, "Please select a lemma to search.",
+							"Select Search Term", JOptionPane.ERROR_MESSAGE);
+				}
 				else{
 					lemma = "";
 					if(textField.getText().equals("")){
@@ -276,7 +280,6 @@ public class MainWindow {
 					else {
 						lemma = textField.getText();
 					}
-
 					ArrayList<String> forms = dict.getFormList(lemma);
 					forms.remove(lemma);
 					List<String> otherForms = null;
