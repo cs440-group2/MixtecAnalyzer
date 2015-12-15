@@ -23,7 +23,7 @@ public class FormsDialog extends JDialog implements ActionListener {
 	
 	public static List<String> showDialog(JFrame frame, ArrayList<String> parts){
 		results = new ArrayList<String>();
-		FormsDialog dialog = new FormsDialog(frame, parts);
+		new FormsDialog(frame, parts);
 		return results;
 	}
 	

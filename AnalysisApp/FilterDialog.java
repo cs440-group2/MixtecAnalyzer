@@ -22,7 +22,7 @@ public class FilterDialog extends JDialog implements ActionListener {
 	
 	public static List<String> showDialog(JFrame frame, ArrayList<String> parts){
 		results = new ArrayList<String>();
-		FilterDialog dialog = new FilterDialog(frame, parts);
+		new FilterDialog(frame, parts);
 		return results;
 	}
 	
