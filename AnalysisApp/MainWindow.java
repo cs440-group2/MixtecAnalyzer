@@ -45,7 +45,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
-public class MainWindow {
+public class MainWindow
+{
 
 	private JFrame frame;
 	private DefaultTableModel tableModel;
@@ -62,32 +63,39 @@ public class MainWindow {
 	private Properties settings;
 	private HashMap<String, Integer> results;
 	private String result;
-	
+
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args)
+	{
 
 		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
+			public void run()
+			{
+				try
+				{
 					Properties settings = new Properties();
 					File settingsFile = new File("settings.properties");
 					MainWindow window = new MainWindow(settings);
-					if(settingsFile.exists()){
+					if (settingsFile.exists())
+					{
 						FileReader reader = new FileReader(settingsFile);
 						settings.load(reader);
 						String dictLocation = settings.getProperty("dictionary");
 						String corpusLocation = settings.getProperty("corpus");
-						if(dictLocation != null){
+						if (dictLocation != null)
+						{
 							window.newDict(dictLocation);
 						}
-						if(corpusLocation != null){
+						if (corpusLocation != null)
+						{
 							window.newCorpus(corpusLocation);
 						}
 					}
 					window.frame.setVisible(true);
-				} catch (IOException e1) {
+				} catch (IOException e1)
+				{
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
@@ -97,24 +105,27 @@ public class MainWindow {
 
 	/**
 	 * Create the application.
-	 * @throws IOException 
+	 * 
+	 * @throws IOException
 	 */
-	public MainWindow(Properties settings) throws IOException {
+	public MainWindow(Properties settings) throws IOException
+	{
 		this.settings = settings;
 		initialize();
 	}
 
 	/**
 	 * Initialize the contents of the frame.
-	 * @throws IOException 
+	 * 
+	 * @throws IOException
 	 */
-	private void initialize() throws IOException {
+	private void initialize() throws IOException
+	{
 		frame = new JFrame();
 		frame.setBounds(100, 100, 1000, 800);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-
-		//Set up menu bar
+		// Set up menu bar
 		JMenuBar menuBar = new JMenuBar();
 		frame.getContentPane().add(menuBar, BorderLayout.NORTH);
 
@@ -123,14 +134,18 @@ public class MainWindow {
 
 		JMenuItem mntmFile = new JMenuItem("Load Transcriptions");
 		mntmFile.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e)
+			{
 				JFileChooser chooser = new JFileChooser();
 				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 				int returnVal = chooser.showOpenDialog(frame);
-				if(returnVal == JFileChooser.APPROVE_OPTION) {
-					try {
+				if (returnVal == JFileChooser.APPROVE_OPTION)
+				{
+					try
+					{
 						newCorpus(chooser.getSelectedFile().getAbsolutePath());
-					} catch (UnsupportedEncodingException e1) {
+					} catch (UnsupportedEncodingException e1)
+					{
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
@@ -142,11 +157,13 @@ public class MainWindow {
 		JMenuItem mntmDict = new JMenuItem("Load Dictionary");
 
 		mntmDict.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e)
+			{
 				JFileChooser chooser = new JFileChooser();
 				chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 				int returnVal = chooser.showOpenDialog(frame);
-				if(returnVal == JFileChooser.APPROVE_OPTION) {
+				if (returnVal == JFileChooser.APPROVE_OPTION)
+				{
 					newDict(chooser.getSelectedFile().getAbsolutePath());
 				}
 			}
@@ -179,8 +196,8 @@ public class MainWindow {
 		list = new JList();
 
 		list.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
+			@Override public void mouseClicked(MouseEvent e)
+			{
 				textField.setText("");
 			}
 		});
@@ -205,21 +222,22 @@ public class MainWindow {
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		panel_4.add(lblNewLabel, BorderLayout.NORTH);
 
-		
-
 		textField.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent e) {
-				if(dict == null) {
+			@Override public void keyReleased(KeyEvent e)
+			{
+				if (dict == null)
+				{
 					textField.setText("");
-					JOptionPane.showMessageDialog(frame,
-							"Please load dictionary first.", "Load Dictionary", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(frame, "Please load dictionary first.", "Load Dictionary",
+							JOptionPane.ERROR_MESSAGE);
 				}
-				else {
+				else
+				{
 					String text = textField.getText();
 					lemmas = dict.getLemmaList(text);
 					lemmaList.removeAllElements();
-					for(int i = 0; i < lemmas.size(); i++){
+					for (int i = 0; i < lemmas.size(); i++)
+					{
 						lemmaList.addElement(lemmas.get(i));
 					}
 					list.setModel(lemmaList);
@@ -238,159 +256,89 @@ public class MainWindow {
 
 		JButton btnNewButton = new JButton("Advanced Search");
 		JButton filterBtn = new JButton();
-		
+
 		JPanel panel_5 = new JPanel();
 		panel_2.add(panel_5, BorderLayout.SOUTH);
 		panel_5.add(filterBtn);
 		panel_5.add(btnNewButton);
-		
-		
+
 		btnNewButton.setEnabled(false);
 		filterBtn.setEnabled(false);
-		
+
 		filterBtn.setText("Filter Results");
 		filterBtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e){
+			public void actionPerformed(ActionEvent e)
+			{
 				filterOptions();
 			}
 		});
 
-	
-		
-		btnSearch.addActionListener(new ActionListener() {//search button action
-			public void actionPerformed(ActionEvent e) {
-				if(dict == null) {
-					JOptionPane.showMessageDialog(frame,
-							"Please load dictionary first.", "Load Dictionary", JOptionPane.ERROR_MESSAGE);
+		btnSearch.addActionListener(new ActionListener() {// search button
+															// action
+			public void actionPerformed(ActionEvent e)
+			{
+				if (dict == null)
+				{
+					JOptionPane.showMessageDialog(frame, "Please load dictionary first.", "Load Dictionary",
+							JOptionPane.ERROR_MESSAGE);
 				}
-				else if(corpus == null){
-					JOptionPane.showMessageDialog(frame, "Please load transcriptions first.",
-							"Load Transcriptions", JOptionPane.ERROR_MESSAGE);
+				else if (corpus == null)
+				{
+					JOptionPane.showMessageDialog(frame, "Please load transcriptions first.", "Load Transcriptions",
+							JOptionPane.ERROR_MESSAGE);
 				}
-				else if (list.getSelectedValue() == null){
-					JOptionPane.showMessageDialog(frame, "Please select a lemma to search.",
-							"Select Search Term", JOptionPane.ERROR_MESSAGE);
+				else if (list.getSelectedValue() == null)
+				{
+					JOptionPane.showMessageDialog(frame, "Please select a lemma to search.", "Select Search Term",
+							JOptionPane.ERROR_MESSAGE);
 				}
-				else{
+				else
+				{
 					lemma = "";
-					if(textField.getText().equals("")){
+					if (textField.getText().equals(""))
+					{
 						lemma = (String) list.getSelectedValue();
 					}
-					else {
+					else
+					{
 						lemma = textField.getText();
-					}
-					ArrayList<String> forms = dict.getFormList(lemma);
-					forms.remove(lemma);
-					List<String> otherForms = null;
-					if(!forms.isEmpty()) {
-						otherForms = FormsDialog.showDialog(frame, forms);
 					}
 
 					position = (String) comboBox.getSelectedItem();
-					try {
-						results = Search.search(lemma, position, dict, otherForms);
-					} catch (FileNotFoundException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
 
-					int total = results.get("TERM_TOTAL");
-					tableModel = new DefaultTableModel(){
-						@Override
-						public Class getColumnClass(int column){
-							if(column == 2){
-								return Double.class;
-							}
-							else{
-								return String.class;
-							}
-						}
-					};
-					tableModel.addColumn("Appearing with search term");
-					tableModel.addColumn("Gloss");
-					tableModel.addColumn("Frequency (%)");
-					tableModel.addColumn("Parts of Speech");
-
-					DecimalFormat format = new DecimalFormat("##.###");
-					for (String key : results.keySet()) {
-						if(!key.equals("TERM_TOTAL")){
-							String gloss = "";
-							StringBuilder parts = new StringBuilder();
-							if(dict.getLemmaList().contains(key)) {
-								ArrayList<String> glosses = dict.getGlossList(key);
-								for(int i = 1; i < glosses.size(); i++) {
-									if(i!=1) {
-										gloss = gloss + ", ";
-									}
-									gloss = gloss + glosses.get(i);
-								}
-								ArrayList<String> partsList = dict.getParts(key, key);
-								for(int i = 0; i < partsList.size(); i++){
-									parts.append(partsList.get(i));
-									if(i + 1 < partsList.size()){
-										parts.append(", ");
-									}
-								}
-							}
-							NumberFormat defaultFormat = NumberFormat.getPercentInstance();
-							String freqString = format.format((results.get(key)/(double) total)*100);
-							Object[] arr = {key, gloss, Double.parseDouble(freqString), parts.toString()};
-							tableModel.addRow(arr);
-						}
-					}
-					String gloss = "";
-					ArrayList<String> glosses = dict.getGlossList(lemma);
-					for(int i = 1; i < glosses.size(); i++) {
-						if(i!=1) {
-							gloss = gloss + ", ";
-						}
-						gloss = gloss + glosses.get(i);
-					}
-					if(gloss.equals(""))
+					try
 					{
-
-						topLabel.setText("Found the lemma \""+lemma+"\" " + total +" times.");
-
+						results = Search.search(lemma, position, dict);
+					} catch (FileNotFoundException e1)
+					{
+						e1.printStackTrace();
+					} catch (IOException e1)
+					{
+						e1.printStackTrace();
 					}
-					else {
 
-						topLabel.setText("Found the lemma \""+lemma+"\" (" + gloss + ") " + total +" times.");
-
-					}
-					table.setModel(tableModel);
-					DefaultRowSorter sorter = new TableRowSorter(tableModel);
-					table.setRowSorter(sorter);
-
-					DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
-					rightRenderer.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
-					table.getColumn("Frequency (%)").setCellRenderer( rightRenderer );
+					updateTable();
 				}
 				filterBtn.setEnabled(true);
 				btnNewButton.setEnabled(true);
 			}
 
 		});
-		
+
 		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Object[] possibilities = {"0","1", "2", "3", "4"};
-				String s = (String)JOptionPane.showInputDialog(
-						frame,
-						"Select how many words you want inbetween:\n",
-						"Advanced Search",
-						JOptionPane.PLAIN_MESSAGE,
-						null,
-						possibilities,
-						"0");
+			public void actionPerformed(ActionEvent e)
+			{
+				Object[] possibilities = { "0", "1", "2", "3", "4" };
+				String s = (String) JOptionPane.showInputDialog(frame, "Select how many words you want inbetween:\n",
+						"Advanced Search", JOptionPane.PLAIN_MESSAGE, null, possibilities, "0");
 
 				int numBtwn;
-				try{
+				try
+				{
 					numBtwn = Integer.parseInt(s);
 
-				}catch(Exception ex){
+				} catch (Exception ex)
+				{
 					return;
 				}
 
@@ -399,45 +347,7 @@ public class MainWindow {
 				result = (String) table.getValueAt(row, 0);
 
 				results = AdvancedSearch.advancedSearch(lemma, result, numBtwn, position, dict);
-				for (String key : results.keySet()){
-					if (!key.equals("TERM_TOTAL")){
-						Double freq = results.get(key)/results.get("TERM_TOTAL");
-						results.put(key, freq);
-					}
-				}
-				results.remove("TERM_TOTAL");
-				tableModel = new DefaultTableModel();
-				tableModel.addColumn("Appearing with search term");
-				tableModel.addColumn("Gloss (meaning)");
-				tableModel.addColumn("Frequency");
-				for (String key : results.keySet()) {
-					String gloss = "";
-					if(dict.getLemmaList().contains(key)) {
-						ArrayList<String> glosses = dict.getGlossList(key);
-						for(int i = 1; i < glosses.size(); i++) {
-							if(i!=1) {
-								gloss = gloss + ", ";
-							}
-							gloss = gloss + glosses.get(i);
-						}
-					}
-					NumberFormat defaultFormat = NumberFormat.getPercentInstance();
-					String[] arr = {key, gloss, new DecimalFormat("##.#").format(results.get(key)*100)};
-					tableModel.addRow(arr);
-				}
-				String gloss = "";
-				ArrayList<String> glosses = dict.getGlossList(lemma);
-				for(int i = 1; i < glosses.size(); i++) {
-					if(i!=1) {
-						gloss = gloss + ", ";
-					}
-					gloss = gloss + glosses.get(i);
-				}
-
-				topLabel.setText("Found the pair \""+lemma+" (" + gloss + ") " + result  + "\" was found " + results.keySet().size()+" times with up to " + numBtwn +" words inbetween.");
-				table.setModel(tableModel);
-				DefaultRowSorter sorter = new TableRowSorter(tableModel);
-				table.setRowSorter(sorter);
+				updateAdvancedSearchTable(numBtwn);
 			}
 		});
 
@@ -446,26 +356,135 @@ public class MainWindow {
 		panel_2.add(topLabel, BorderLayout.NORTH);
 	}
 
-	public void newCorpus(String filename) throws UnsupportedEncodingException{
+	public void updateAdvancedSearchTable(int numBtwn)
+	{
+		for (String key : results.keySet())
+		{
+			if (!key.equals("TERM_TOTAL"))
+			{
+				int freq = results.get(key) / results.get("TERM_TOTAL");
+				results.put(key, freq);
+			}
+		}
+		results.remove("TERM_TOTAL");
+		tableModel = new DefaultTableModel();
+		tableModel.addColumn("Appearing with search term");
+		tableModel.addColumn("Frequency");
+		for (String key : results.keySet())
+		{
+			NumberFormat defaultFormat = NumberFormat.getPercentInstance();
+			String[] arr = { key, new DecimalFormat("##.#").format(results.get(key) * 100) };
+			tableModel.addRow(arr);
+		}
+		String gloss = "";
+
+		ArrayList<String> glosses = dict.getGlossList(lemma);
+
+		topLabel.setText("Found the pair \"" + lemma + " (" + joinList(glosses, ",") + ") " + result + "\" was found "
+				+ results.keySet().size() + " times with up to " + numBtwn + " words inbetween.");
+		table.setModel(tableModel);
+		DefaultRowSorter sorter = new TableRowSorter(tableModel);
+		table.setRowSorter(sorter);
+	}
+
+	public void updateTable()
+	{
+		int total = results.get("TERM_TOTAL");
+		tableModel = new DefaultTableModel() {
+			@Override public Class getColumnClass(int column)
+			{
+				if (column == 2)
+				{
+					return Double.class;
+				}
+				else
+				{
+					return String.class;
+				}
+			}
+		};
+		tableModel.addColumn("Appearing with search term");
+		tableModel.addColumn("Gloss");
+		tableModel.addColumn("Frequency (%)");
+		tableModel.addColumn("Parts of Speech");
+
+		DecimalFormat format = new DecimalFormat("##.###");
+		for (String key : results.keySet())
+		{
+			if (!key.equals("TERM_TOTAL"))
+			{
+				String gloss = "";
+				String parts = "";
+				if (dict.getLemmaList().contains(key))
+				{
+					ArrayList<String> glosses = dict.getGlossList(key);
+					gloss = joinList(glosses, ", ");
+					ArrayList<String> partsList = dict.getParts(key, key);
+					parts = joinList(partsList, ", ");
+				}
+				NumberFormat defaultFormat = NumberFormat.getPercentInstance();
+				String freqString = format.format((results.get(key) / (double) total) * 100);
+				Object[] arr = { key, gloss, Double.parseDouble(freqString), parts };
+				tableModel.addRow(arr);
+			}
+		}
+		String gloss = "";
+		ArrayList<String> glosses = dict.getGlossList(lemma);
+		for (int i = 1; i < glosses.size(); i++)
+		{
+			if (i != 1)
+			{
+				gloss = gloss + ", ";
+			}
+			gloss = gloss + glosses.get(i);
+		}
+		if (gloss.equals(""))
+		{
+
+			topLabel.setText("Found the lemma \"" + lemma + "\" " + total + " times.");
+
+		}
+		else
+		{
+
+			topLabel.setText("Found the lemma \"" + lemma + "\" (" + gloss + ") " + total + " times.");
+
+		}
+		table.setModel(tableModel);
+		DefaultRowSorter sorter = new TableRowSorter(tableModel);
+		table.setRowSorter(sorter);
+
+		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+		rightRenderer.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
+		table.getColumn("Frequency (%)").setCellRenderer(rightRenderer);
+	}
+
+	public void newCorpus(String filename) throws UnsupportedEncodingException
+	{
 		corpus = new Corpus(filename);
 		new Search(corpus);
-		if(corpus.getFiles().isEmpty()){
-			JOptionPane.showMessageDialog(frame,
-					"No Readable Transcriptions Found.", "No Transcriptions", JOptionPane.ERROR_MESSAGE);
+		if (corpus.getFiles().isEmpty())
+		{
+			JOptionPane.showMessageDialog(frame, "No Readable Transcriptions Found.", "No Transcriptions",
+					JOptionPane.ERROR_MESSAGE);
 		}
-		else{
+		else
+		{
 			topLabel.setText("Transcriptions Loaded");
 			settings.setProperty("corpus", filename);
 			saveSettings();
 		}
 	}
 
-	public void newDict(String filename){
-		try {
+	public void newDict(String filename)
+	{
+		try
+		{
 			dict = new Dictionary(filename);
 			lemmaList = new DefaultListModel();
 			lemmas = dict.getLemmaList();
-			for(int i = 0; i < lemmas.size(); i++){
+			for (int i = 0; i < lemmas.size(); i++)
+			{
 				lemmaList.addElement(lemmas.get(i));
 			}
 
@@ -474,62 +493,75 @@ public class MainWindow {
 			textField.setText("");
 			settings.setProperty("dictionary", filename);
 			saveSettings();
-		} catch (IOException e) {
+		} catch (IOException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 	}
 
-
-	public void saveSettings(){
+	public void saveSettings()
+	{
 		File settingsFile = new File("settings.properties");
-		try{
+		try
+		{
 			FileWriter writer = new FileWriter(settingsFile);
 			settings.store(writer, null);
-		} catch (IOException e) {
+		} catch (IOException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-
 	}
 
-	public void filterOptions(){
+	public void filterOptions()
+	{
 		List<String> filterList = FilterDialog.showDialog(frame, dict.getAllParts());
-		if(filterList.isEmpty()){
+		if (filterList.isEmpty())
+		{
 			table.setModel(tableModel);
 			tableModel.fireTableStructureChanged();
 			table.setRowSorter(new TableRowSorter(tableModel));
 		}
-		else{
-			DefaultTableModel filteredModel = new DefaultTableModel(){
-				@Override
-				public Class getColumnClass(int column){
-					if(column == 2){
+		else
+		{
+			DefaultTableModel filteredModel = new DefaultTableModel() {
+				@Override public Class getColumnClass(int column)
+				{
+					if (column == 2)
+					{
 						return Double.class;
 					}
-					else{
+					else
+					{
 						return String.class;
 					}
 				}
 			};
-			for(int col = 0; col < tableModel.getColumnCount(); col++){
+			for (int col = 0; col < tableModel.getColumnCount(); col++)
+			{
 				filteredModel.addColumn(tableModel.getColumnName(col));
 			}
-			for(int row = 0; row < tableModel.getRowCount(); row++){
+			for (int row = 0; row < tableModel.getRowCount(); row++)
+			{
 				String resultParts = (String) tableModel.getValueAt(row, 3);
 				boolean include = false;
-				for(String part:filterList){
+				for (String part : filterList)
+				{
 					Pattern p = Pattern.compile("(^|\\s)" + part + "(,|$)");
 					Matcher m = p.matcher(resultParts);
-					if(m.find()){
+					if (m.find())
+					{
 						include = true;
 					}
 				}
-				if(include){
+				if (include)
+				{
 					Object[] rowData = new Object[tableModel.getColumnCount()];
-					for(int col = 0; col < tableModel.getColumnCount(); col++){
+					for (int col = 0; col < tableModel.getColumnCount(); col++)
+					{
 						rowData[col] = tableModel.getValueAt(row, col);
 					}
 					filteredModel.addRow(rowData);
@@ -543,9 +575,12 @@ public class MainWindow {
 
 		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
 		rightRenderer.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
-		table.getColumn("Frequency (%)").setCellRenderer( rightRenderer );
+		table.getColumn("Frequency (%)").setCellRenderer(rightRenderer);
 
 	}
-	
 
+	public static String joinList(List list, String literal)
+	{
+		return list.toString().replaceAll(",", literal).replaceAll("[\\[.\\].\\s+]", "");
+	}
 }
