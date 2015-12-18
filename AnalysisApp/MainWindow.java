@@ -282,6 +282,7 @@ public class MainWindow
 		btnSearch.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e)
 			{
+				btnAdvancedSearch.setText("Advanced Search");
 				if (dict == null)
 				{
 					JOptionPane.showMessageDialog(frame, "Please load dictionary first.", "Load Dictionary",
