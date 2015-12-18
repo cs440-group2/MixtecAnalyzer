@@ -62,6 +62,7 @@ public class MainWindow
 	private JLabel topLabel;
 	private Properties settings;
 	private HashMap<String, Integer> results;
+	private HashMap<String, Double> advResults;
 	private String result;
 
 	/**
@@ -254,15 +255,15 @@ public class MainWindow
 		JScrollPane tableScroll = new JScrollPane(table);
 		panel_2.add(tableScroll);
 
-		JButton btnNewButton = new JButton("Advanced Search");
+		JButton btnAdvancedSearch = new JButton("Advanced Search");
 		JButton filterBtn = new JButton();
 
 		JPanel panel_5 = new JPanel();
 		panel_2.add(panel_5, BorderLayout.SOUTH);
 		panel_5.add(filterBtn);
-		panel_5.add(btnNewButton);
+		panel_5.add(btnAdvancedSearch);
 
-		btnNewButton.setEnabled(false);
+		btnAdvancedSearch.setEnabled(false);
 		filterBtn.setEnabled(false);
 
 		filterBtn.setText("Filter Results");
@@ -273,8 +274,7 @@ public class MainWindow
 			}
 		});
 
-		btnSearch.addActionListener(new ActionListener() {// search button
-															// action
+		btnSearch.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e)
 			{
 				if (dict == null)
@@ -320,34 +320,43 @@ public class MainWindow
 					updateTable();
 				}
 				filterBtn.setEnabled(true);
-				btnNewButton.setEnabled(true);
+				btnAdvancedSearch.setEnabled(true);
 			}
 
 		});
 
-		btnNewButton.addActionListener(new ActionListener() {
+		btnAdvancedSearch.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e)
 			{
-				Object[] possibilities = { "0", "1", "2", "3", "4" };
-				String s = (String) JOptionPane.showInputDialog(frame, "Select how many words you want inbetween:\n",
-						"Advanced Search", JOptionPane.PLAIN_MESSAGE, null, possibilities, "0");
-
-				int numBtwn;
-				try
+				if (btnAdvancedSearch.getText().equals("Advanced Search"))
 				{
-					numBtwn = Integer.parseInt(s);
+					Object[] possibilities = { "0", "1", "2", "3", "4" };
+					String s = (String) JOptionPane.showInputDialog(frame,
+							"Select how many words you want inbetween:\n", "Advanced Search", JOptionPane.PLAIN_MESSAGE,
+							null, possibilities, "0");
 
-				} catch (Exception ex)
-				{
-					return;
+					int numBtwn;
+					try
+					{
+						numBtwn = Integer.parseInt(s);
+
+					} catch (Exception ex)
+					{
+						return;
+					}
+
+					int row = table.getSelectedRow();
+					result = (String) table.getValueAt(row, 0);
+
+					advResults = AdvancedSearch.advancedSearch(lemma, result, numBtwn, position, dict);
+					updateAdvancedSearchTable(numBtwn);
+					btnAdvancedSearch.setText("Clear Advanced Search");
 				}
-
-				HashMap<String, Double> results = null;
-				int row = table.getSelectedRow();
-				result = (String) table.getValueAt(row, 0);
-
-				results = AdvancedSearch.advancedSearch(lemma, result, numBtwn, position, dict);
-				updateAdvancedSearchTable(numBtwn);
+				else 
+				{
+					btnAdvancedSearch.setText("Advanced Search");
+					updateTable();
+				}
 			}
 		});
 
@@ -358,22 +367,22 @@ public class MainWindow
 
 	public void updateAdvancedSearchTable(int numBtwn)
 	{
-		for (String key : results.keySet())
+		for (String key : advResults.keySet())
 		{
 			if (!key.equals("TERM_TOTAL"))
 			{
-				int freq = results.get(key) / results.get("TERM_TOTAL");
-				results.put(key, freq);
+				Double freq = advResults.get(key) / advResults.get("TERM_TOTAL");
+				advResults.put(key, freq);
 			}
 		}
-		results.remove("TERM_TOTAL");
+		advResults.remove("TERM_TOTAL");
 		tableModel = new DefaultTableModel();
 		tableModel.addColumn("Appearing with search term");
 		tableModel.addColumn("Frequency");
-		for (String key : results.keySet())
+		for (String key : advResults.keySet())
 		{
 			NumberFormat defaultFormat = NumberFormat.getPercentInstance();
-			String[] arr = { key, new DecimalFormat("##.#").format(results.get(key) * 100) };
+			String[] arr = { key, new DecimalFormat("##.#").format(advResults.get(key) * 100) };
 			tableModel.addRow(arr);
 		}
 		String gloss = "";
@@ -430,14 +439,7 @@ public class MainWindow
 		}
 		String gloss = "";
 		ArrayList<String> glosses = dict.getGlossList(lemma);
-		for (int i = 1; i < glosses.size(); i++)
-		{
-			if (i != 1)
-			{
-				gloss = gloss + ", ";
-			}
-			gloss = gloss + glosses.get(i);
-		}
+		gloss = joinList(glosses, ", ");
 		if (gloss.equals(""))
 		{
 
