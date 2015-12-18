@@ -508,6 +508,8 @@ public class MainWindow
 			list.updateUI();
 			settings.setProperty("dictionary", filename);
 			saveSettings();
+			textField.setEnabled(true);
+			textField.setText("");
 		} catch (IOException e)
 		{
 			// TODO Auto-generated catch block
