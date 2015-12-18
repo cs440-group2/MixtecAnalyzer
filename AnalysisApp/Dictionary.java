@@ -49,7 +49,7 @@ public class Dictionary
 
 		while (line != null)
 		{
-			if (line.startsWith("\\lx "))
+			if (line.startsWith("\\lx "))//entry lemma
 			{
 				if (!newForms.isEmpty())
 				{
@@ -73,11 +73,11 @@ public class Dictionary
 					formMap.put(currentLemmaString, aLemmas);
 				}
 			}
-			else if (line.startsWith("\\glosa "))
+			else if (line.startsWith("\\glosa "))//gloss
 			{
 				currentLemma.addGloss(line.substring(7));
 			}
-			else if (line.startsWith("\\lx_") && !line.startsWith("\\lx_cita"))
+			else if (line.startsWith("\\lx_") && !line.startsWith("\\lx_cita"))//other forms
 			{
 				String entry = line.substring(line.indexOf(' '));
 
@@ -102,7 +102,7 @@ public class Dictionary
 					newForms.add(item);
 				}
 			}
-			else if (line.startsWith("\\catgr "))
+			else if (line.startsWith("\\catgr "))//part of speech
 			{
 				part = line.substring(7);
 				if (!allParts.contains(part))
@@ -122,7 +122,7 @@ public class Dictionary
 	 * @return ArrayList of lemmas
 	 */
 	public ArrayList<String> getLemmaList()
-	{// TODO: switch lemmas to lemmaMap keys
+	{
 		return (ArrayList<String>) lemmas.clone();
 	}
 
