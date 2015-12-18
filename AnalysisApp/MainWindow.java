@@ -43,6 +43,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 public class MainWindow
@@ -52,9 +53,9 @@ public class MainWindow
 	private DefaultTableModel tableModel;
 	private JTextField textField;
 	private JTable table;
-	private JList list;
+	private JTable list;
 	private Dictionary dict;
-	private DefaultListModel lemmaList;
+	private DefaultTableModel lemmaList;
 	private ArrayList<String> lemmas;
 	private Corpus corpus;
 	private String lemma;
@@ -97,7 +98,6 @@ public class MainWindow
 					window.frame.setVisible(true);
 				} catch (IOException e1)
 				{
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			}
@@ -147,7 +147,6 @@ public class MainWindow
 						newCorpus(chooser.getSelectedFile().getAbsolutePath());
 					} catch (UnsupportedEncodingException e1)
 					{
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 				}
@@ -194,7 +193,7 @@ public class MainWindow
 		textField.setEnabled(false);
 		textField.setText("No Dictionary Loaded");
 
-		list = new JList();
+		list = new JTable();
 
 		list.addMouseListener(new MouseAdapter() {
 			@Override public void mouseClicked(MouseEvent e)
@@ -236,10 +235,16 @@ public class MainWindow
 				{
 					String text = textField.getText();
 					lemmas = dict.getLemmaList(text);
-					lemmaList.removeAllElements();
+					lemmaList = new DefaultTableModel();
+					lemmaList.addColumn("Lemma");
+					lemmaList.addColumn("Gloss");
 					for (int i = 0; i < lemmas.size(); i++)
 					{
-						lemmaList.addElement(lemmas.get(i));
+						ArrayList<String> glosses = dict.getGlossList(lemmas.get(i));
+						glosses.remove(lemmas.get(i));
+						String gloss = joinList(glosses, ", ");
+						String[] data = {lemmas.get(i), gloss};
+						lemmaList.addRow(data);
 					}
 					list.setModel(lemmaList);
 					list.updateUI();
@@ -287,7 +292,7 @@ public class MainWindow
 					JOptionPane.showMessageDialog(frame, "Please load transcriptions first.", "Load Transcriptions",
 							JOptionPane.ERROR_MESSAGE);
 				}
-				else if (list.getSelectedValue() == null)
+				else if (list.getSelectedRow() == -1)
 				{
 					JOptionPane.showMessageDialog(frame, "Please select a lemma to search.", "Select Search Term",
 							JOptionPane.ERROR_MESSAGE);
@@ -297,7 +302,9 @@ public class MainWindow
 					lemma = "";
 					if (textField.getText().equals(""))
 					{
-						lemma = (String) list.getSelectedValue();
+						TableModel m = list.getModel();
+						int i = list.getSelectedRow();	
+						lemma = (String) m.getValueAt(i, 0);
 					}
 					else
 					{
@@ -385,9 +392,9 @@ public class MainWindow
 			String[] arr = { key, new DecimalFormat("##.#").format(advResults.get(key) * 100) };
 			tableModel.addRow(arr);
 		}
-		String gloss = "";
 
 		ArrayList<String> glosses = dict.getGlossList(lemma);
+		glosses.remove(lemma);
 
 		topLabel.setText("Found the pair \"" + lemma + " (" + joinList(glosses, ",") + ") " + result + "\" was found "
 				+ results.keySet().size() + " times with up to " + numBtwn + " words inbetween.");
@@ -427,6 +434,7 @@ public class MainWindow
 				if (dict.getLemmaList().contains(key))
 				{
 					ArrayList<String> glosses = dict.getGlossList(key);
+					glosses.remove(key);
 					gloss = joinList(glosses, ", ");
 					ArrayList<String> partsList = dict.getParts(key, key);
 					parts = joinList(partsList, ", ");
@@ -439,6 +447,7 @@ public class MainWindow
 		}
 		String gloss = "";
 		ArrayList<String> glosses = dict.getGlossList(lemma);
+		glosses.remove(lemma);
 		gloss = joinList(glosses, ", ");
 		if (gloss.equals(""))
 		{
@@ -483,16 +492,20 @@ public class MainWindow
 		try
 		{
 			dict = new Dictionary(filename);
-			lemmaList = new DefaultListModel();
+			lemmaList = new DefaultTableModel();
+			lemmaList.addColumn("Lemma");
+			lemmaList.addColumn("Gloss");
 			lemmas = dict.getLemmaList();
 			for (int i = 0; i < lemmas.size(); i++)
 			{
-				lemmaList.addElement(lemmas.get(i));
+				ArrayList<String> glosses = dict.getGlossList(lemmas.get(i));
+				glosses.remove(lemmas.get(i));
+				String gloss = joinList(glosses, ", ");
+				String[] data = {lemmas.get(i), gloss};
+				lemmaList.addRow(data);
 			}
-
 			list.setModel(lemmaList);
-			textField.setEnabled(true);
-			textField.setText("");
+			list.updateUI();
 			settings.setProperty("dictionary", filename);
 			saveSettings();
 		} catch (IOException e)
