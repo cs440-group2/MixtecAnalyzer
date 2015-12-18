@@ -2,8 +2,6 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.*;
 
-import javax.swing.JFileChooser;
-
 public class Search
 {
 

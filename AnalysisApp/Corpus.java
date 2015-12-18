@@ -7,8 +7,6 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
-import javax.swing.JFileChooser;
-
 /**
  * Creates the corpus which contains all transcriptions files put in an
  * ArrayList so it can be searched for collocations

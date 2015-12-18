@@ -23,14 +23,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
 import javax.swing.DefaultRowSorter;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -208,7 +206,7 @@ public class MainWindow
 		panel_1.add(panel_4, BorderLayout.SOUTH);
 		panel_4.setLayout(new BorderLayout(0, 0));
 
-		JComboBox comboBox = new JComboBox();
+		JComboBox<String> comboBox = new JComboBox<String>();
 		comboBox.addItem("preceding");
 		comboBox.addItem("following");
 		comboBox.addItem("both");
@@ -440,7 +438,7 @@ public class MainWindow
 					ArrayList<String> partsList = dict.getParts(key, key);
 					parts = joinList(partsList, ", ");
 				}
-				NumberFormat defaultFormat = NumberFormat.getPercentInstance();
+				
 				String freqString = format.format((results.get(key) / (double) total) * 100);
 				Object[] arr = { key, gloss, Double.parseDouble(freqString), parts };
 				tableModel.addRow(arr);
