@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
+
 /**
  * Creates the corpus which contains all transcriptions files put in an
  * ArrayList so it can be searched for collocations
@@ -78,20 +79,21 @@ public class Corpus
 
 				String line;
 				String str = "";
+				String trimLine;
 
 				try
 				{
 					while ((line = br.readLine()) != null)
 					{
-
-						if (line.startsWith("</Turn"))
+						trimLine = line.trim();
+						if (trimLine.startsWith("</Turn"))
 						{
 							corpus.add(str);
 							str = "";
 						}
-						else if (!line.startsWith("<"))
+						else if (!trimLine.startsWith("<"))
 						{
-							str = str + line + " ";
+							str = str + trimLine + " ";
 						}
 					}
 				} catch (IOException e)
