@@ -112,6 +112,8 @@ public class MainWindow
 	/**
 	 * Create the application.
 	 * 
+	 * @param settings	The Properties object that contains the information for dictionary and transcription files
+	 * 
 	 * @throws IOException
 	 */
 	public MainWindow(Properties settings) throws IOException
@@ -650,7 +652,7 @@ public class MainWindow
 	 * 
 	 * @param list list to combine into one string
 	 * @param literal what to each string in the list with
-	 * @return
+	 * @return the string created by joining the strings of the list together
 	 */
 	public static String joinList(List list, String literal)
 	{
