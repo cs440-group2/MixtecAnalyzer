@@ -7,6 +7,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -241,7 +242,7 @@ public class MainWindow
 						ArrayList<String> glosses = dict.getGlossList(lemmas.get(i));
 						glosses.remove(lemmas.get(i));
 						String gloss = joinList(glosses, ", ");
-						String[] data = {lemmas.get(i), gloss};
+						String[] data = { lemmas.get(i), gloss };
 						lemmaList.addRow(data);
 					}
 					list.setModel(lemmaList);
@@ -270,6 +271,7 @@ public class MainWindow
 		filterBtn.setEnabled(false);
 
 		filterBtn.setText("Filter Results");
+
 		filterBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e)
 			{
@@ -280,6 +282,7 @@ public class MainWindow
 		btnSearch.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e)
 			{
+				btnAdvancedSearch.setEnabled(true);
 				btnAdvancedSearch.setText("Advanced Search");
 				if (dict == null)
 				{
@@ -302,7 +305,7 @@ public class MainWindow
 					if (textField.getText().equals(""))
 					{
 						TableModel m = list.getModel();
-						int i = list.getSelectedRow();	
+						int i = list.getSelectedRow();
 						lemma = (String) m.getValueAt(i, 0);
 					}
 					else
@@ -326,7 +329,6 @@ public class MainWindow
 					updateTable();
 				}
 				filterBtn.setEnabled(true);
-				btnAdvancedSearch.setEnabled(true);
 			}
 
 		});
@@ -336,29 +338,38 @@ public class MainWindow
 			{
 				if (btnAdvancedSearch.getText().equals("Advanced Search"))
 				{
-					Object[] possibilities = { "0", "1", "2", "3", "4" };
-					String s = (String) JOptionPane.showInputDialog(frame,
-							"Select how many words you want inbetween:\n", "Advanced Search", JOptionPane.PLAIN_MESSAGE,
-							null, possibilities, "0");
-
-					int numBtwn;
-					try
-					{
-						numBtwn = Integer.parseInt(s);
-
-					} catch (Exception ex)
-					{
-						return;
-					}
-
 					int row = table.getSelectedRow();
-					result = (String) table.getValueAt(row, 0);
+					if (row == -1)
+					{
+						JOptionPane.showMessageDialog(frame,
+								"Please select a row in the table to do an advanced search with.",
+								"Select Advanced Search Term", JOptionPane.ERROR_MESSAGE);
+					}
+					else
+					{
+						Object[] possibilities = { "0", "1", "2", "3", "4" };
+						String s = (String) JOptionPane.showInputDialog(frame,
+								"Select how many words you want inbetween:\n", "Advanced Search",
+								JOptionPane.PLAIN_MESSAGE, null, possibilities, "0");
 
-					advResults = AdvancedSearch.advancedSearch(lemma, result, numBtwn, position, dict);
-					updateAdvancedSearchTable(numBtwn);
-					btnAdvancedSearch.setText("Clear Advanced Search");
+						int numBtwn;
+						try
+						{
+							numBtwn = Integer.parseInt(s);
+
+						} catch (Exception ex)
+						{
+							return;
+						}
+						
+						result = (String) table.getValueAt(row, 0);
+
+						advResults = AdvancedSearch.advancedSearch(lemma, result, numBtwn, position, dict);
+						updateAdvancedSearchTable(numBtwn);
+						btnAdvancedSearch.setText("Clear Advanced Search");
+					}
 				}
-				else 
+				else
 				{
 					btnAdvancedSearch.setText("Advanced Search");
 					updateTable();
@@ -438,7 +449,7 @@ public class MainWindow
 					ArrayList<String> partsList = dict.getParts(key, key);
 					parts = joinList(partsList, ", ");
 				}
-				
+
 				String freqString = format.format((results.get(key) / (double) total) * 100);
 				Object[] arr = { key, gloss, Double.parseDouble(freqString), parts };
 				tableModel.addRow(arr);
@@ -500,7 +511,7 @@ public class MainWindow
 				ArrayList<String> glosses = dict.getGlossList(lemmas.get(i));
 				glosses.remove(lemmas.get(i));
 				String gloss = joinList(glosses, ", ");
-				String[] data = {lemmas.get(i), gloss};
+				String[] data = { lemmas.get(i), gloss };
 				lemmaList.addRow(data);
 			}
 			list.setModel(lemmaList);
