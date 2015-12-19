@@ -7,7 +7,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -64,6 +63,8 @@ public class MainWindow
 	private HashMap<String, Integer> results;
 	private HashMap<String, Double> advResults;
 	private String result;
+	
+	private static final String PROPERTIES_FILE = "PatternSearch.properties";
 
 	/**
 	 * Launch the application.
@@ -77,7 +78,7 @@ public class MainWindow
 				try
 				{
 					Properties settings = new Properties();
-					File settingsFile = new File("settings.properties");
+					File settingsFile = new File(PROPERTIES_FILE);
 					MainWindow window = new MainWindow(settings);
 					if (settingsFile.exists())
 					{
@@ -121,7 +122,7 @@ public class MainWindow
 	 */
 	private void initialize() throws IOException
 	{
-		frame = new JFrame();
+		frame = new JFrame("Mixtec Pattern Search");
 		frame.setBounds(100, 100, 1000, 800);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -361,7 +362,7 @@ public class MainWindow
 						{
 							return;
 						}
-						
+
 						result = (String) table.getValueAt(row, 0);
 
 						advResults = AdvancedSearch.advancedSearch(lemma, result, numBtwn, position, dict);
@@ -382,6 +383,12 @@ public class MainWindow
 		panel_2.add(topLabel, BorderLayout.NORTH);
 	}
 
+	/**
+	 * This method is called when the advanced search method is called and
+	 * updates the table to show the results for an advanced search.
+	 * 
+	 * @param numBtwn number of words between the lemma and search term
+	 */
 	public void updateAdvancedSearchTable(int numBtwn)
 	{
 		for (String key : advResults.keySet())
@@ -413,6 +420,10 @@ public class MainWindow
 		table.setRowSorter(sorter);
 	}
 
+	/**
+	 * This method is called when the search method is called and updates the
+	 * table to show the results for an advanced search.
+	 */
 	public void updateTable()
 	{
 		int total = results.get("TERM_TOTAL");
@@ -480,6 +491,12 @@ public class MainWindow
 		table.getColumn("Frequency (%)").setCellRenderer(rightRenderer);
 	}
 
+	/**
+	 * Creates a corpus when the location of the transcriptions is updated
+	 * 
+	 * @param filename path to the folder enclosing the transcription files
+	 * @throws UnsupportedEncodingException
+	 */
 	public void newCorpus(String filename) throws UnsupportedEncodingException
 	{
 		corpus = new Corpus(filename);
@@ -497,6 +514,12 @@ public class MainWindow
 		}
 	}
 
+	/**
+	 * Creates a dictionary object when the user updated the location of the
+	 * dictionary file.
+	 * 
+	 * @param filename path to the dictionary file
+	 */
 	public void newDict(String filename)
 	{
 		try
@@ -528,9 +551,13 @@ public class MainWindow
 
 	}
 
+	/**
+	 * Saves the location of the transcriptions and the dictionary file to
+	 * setting files easily accessible next time the user open the program.
+	 */
 	public void saveSettings()
 	{
-		File settingsFile = new File("settings.properties");
+		File settingsFile = new File(PROPERTIES_FILE);
 		try
 		{
 			FileWriter writer = new FileWriter(settingsFile);
@@ -543,6 +570,10 @@ public class MainWindow
 
 	}
 
+	/**
+	 * Creates a dialogue to allow the user to filer the results based off of
+	 * the part of the speech the word is.
+	 */
 	public void filterOptions()
 	{
 		List<String> filterList = FilterDialog.showDialog(frame, dict.getAllParts());
@@ -606,6 +637,13 @@ public class MainWindow
 
 	}
 
+	/**
+	 * Method to join the indices of a list separated by some string.
+	 * 
+	 * @param list list to combine into one string
+	 * @param literal what to each string in the list with
+	 * @return
+	 */
 	public static String joinList(List list, String literal)
 	{
 		return list.toString().replaceAll(",", literal).replaceAll("[\\[.\\].\\s+]", "");
