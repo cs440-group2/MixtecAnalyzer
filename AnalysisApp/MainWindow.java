@@ -1,6 +1,8 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -13,6 +15,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -24,6 +27,7 @@ import java.util.regex.Pattern;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultRowSorter;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -65,6 +69,7 @@ public class MainWindow
 	private String result;
 	
 	private static final String PROPERTIES_FILE = "PatternSearch.properties";
+	private static final String ICON_FILE = "res/Icon.png";
 
 	/**
 	 * Launch the application.
@@ -124,6 +129,9 @@ public class MainWindow
 	{
 		frame = new JFrame("Mixtec Pattern Search");
 		frame.setBounds(100, 100, 1000, 800);
+		URL url = MainWindow.class.getResource(ICON_FILE); 
+		Image image = Toolkit.getDefaultToolkit().getImage(url);
+		frame.setIconImage(new ImageIcon(image).getImage());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		// Set up menu bar
